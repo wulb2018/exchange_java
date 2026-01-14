@@ -2,6 +2,7 @@ package com.wulb2018.model.entity;
 
 import java.time.LocalDateTime;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.wulb2018.model.BaseEntity;
 import lombok.Data;
 import lombok.ToString;
@@ -63,17 +64,8 @@ public class Order extends BaseEntity<Order> {
     /**
      * 0=新建，1=部分成交，2=全部成交，3=已取消
      */
+    @TableField("`status`")
     private Integer status;
-
-    /**
-     * 下单时间
-     */
-    private LocalDateTime createdAt;
-
-    /**
-     * 状态更新时间
-     */
-    private LocalDateTime updatedAt;
 
 }
 

@@ -1,10 +1,9 @@
 package com.wulb2018.controller;
 
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.wulb2018.client.OrderFeignClient;
 import com.wulb2018.model.ApiResponse;
 import com.wulb2018.model.vo.OrderVO;
-import com.wulb2018.model.dto.OrderDTO;
 import com.wulb2018.model.dto.OrderAddDTO;
 import com.wulb2018.model.dto.OrderUpdateDTO;
 import com.wulb2018.service.OrderService;
@@ -34,6 +33,8 @@ public class OrderController extends BaseRestController {
 
     private final OrderService orderService;
 
+    private final OrderFeignClient orderFeignClient;
+
 
 
     @ApiOperation("查询详情")
@@ -43,9 +44,22 @@ public class OrderController extends BaseRestController {
     }
 
     @ApiOperation("添加委托订单表")
-    @PostMapping("add")
-    public ApiResponse<Boolean> add(@Valid OrderAddDTO orderAddDTO) {
-        return ApiResponse.success(orderService.save(orderAddDTO));
+    @RequestMapping("add")
+    public ApiResponse<Boolean> add() {//@Valid OrderAddDTO orderAddDTO
+        ApiResponse<String> stringApiResponse = orderFeignClient.create(1L, 2, 3, 4, 5);
+
+        return ApiResponse.success();
+//        OrderAddDTO orderAddDTO = new OrderAddDTO();
+//        orderAddDTO.setUserId(1L);
+//        orderAddDTO.setSymbolId(1L);
+//        orderAddDTO.setSide(1);
+//        orderAddDTO.setType(1);
+//        orderAddDTO.setPrice(1000.01);
+//        orderAddDTO.setQuantity(2.);
+//        orderAddDTO.setStatus(0);
+//        orderAddDTO.setFrozenAmount(1001.02);
+//
+//        return ApiResponse.success(orderService.save(orderAddDTO));
     }
 
     @ApiOperation("修改委托订单表")

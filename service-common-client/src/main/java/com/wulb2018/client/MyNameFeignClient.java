@@ -8,7 +8,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @date 2026/1/11
  * @description TODO
  */
-@FeignClient("service-matching-engine")
+@FeignClient(
+        name = "service-matching-engine",
+        contextId = "MyNameFeignClient"
+)
 public interface MyNameFeignClient {
     @RequestMapping("/name")
     public String getName();

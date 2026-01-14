@@ -47,11 +47,5 @@ public class OrderDTO {
     @ApiModelProperty("0=新建，1=部分成交，2=全部成交，3=已取消")
     private Integer status;
 
-    @ApiModelProperty("下单时间")
-    private LocalDateTime createdAt;
-
-    @ApiModelProperty("状态更新时间")
-    private LocalDateTime updatedAt;
-
 }
 

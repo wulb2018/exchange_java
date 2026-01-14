@@ -1,10 +1,7 @@
 package com.wulb2018.service;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wulb2018.mapper.OrderMapper;
-import com.wulb2018.model.dto.OrderDTO;
 import com.wulb2018.model.dto.OrderAddDTO;
 import com.wulb2018.model.dto.OrderUpdateDTO;
 import com.wulb2018.model.entity.Order;
@@ -35,7 +32,8 @@ public class OrderService extends BaseService<OrderMapper, Order> {
     }
 
     public Boolean save(OrderAddDTO orderAddDTO) {
-        return this.save(orderConvert.toEntity(orderAddDTO));
+        Order entity = orderConvert.toEntity(orderAddDTO);
+        return this.save(entity);
     }
 
     public Boolean updateById(OrderUpdateDTO orderUpdateDTO) {

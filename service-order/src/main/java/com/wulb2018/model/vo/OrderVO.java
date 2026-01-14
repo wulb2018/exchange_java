@@ -49,10 +49,10 @@ public class OrderVO extends BaseVO<OrderVO> {
     private Integer status;
 
     @ApiModelProperty("下单时间")
-    private LocalDateTime createdAt;
+    private LocalDateTime createdDate;
 
     @ApiModelProperty("状态更新时间")
-    private LocalDateTime updatedAt;
+    private LocalDateTime modifyDate;
 
 
 }

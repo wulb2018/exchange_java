@@ -11,7 +11,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  */
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableFeignClients
+@EnableFeignClients(basePackages = "com.wulb2018.client")
 public class ServiceMatchingEngineApplication
 {
     public static void main( String[] args )

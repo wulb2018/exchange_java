@@ -1,38 +1,37 @@
 package com.wulb2018;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import com.wulb2018.model.dto.OrderAddDTO;
+import com.wulb2018.service.OrderService;
+import jakarta.annotation.Resource;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.time.LocalDateTime;
+
 
 /**
  * Unit test for simple App.
  */
-public class AppTest 
-    extends TestCase
+@SpringBootTest
+public class AppTest
 {
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public AppTest( String testName )
-    {
-        super( testName );
-    }
+    @Autowired
+    private OrderService orderService;
 
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
-    {
-        return new TestSuite( AppTest.class );
-    }
-
-    /**
-     * Rigourous Test :-)
-     */
-    public void testApp()
-    {
-        assertTrue( true );
+    @Test
+    public void testOrder(){
+        OrderAddDTO orderAddDTO = new OrderAddDTO();
+        orderAddDTO.setUserId(1L);
+        orderAddDTO.setSymbolId(1L);
+        orderAddDTO.setSide(1);
+        orderAddDTO.setType(1);
+        orderAddDTO.setPrice(1000.01);
+        orderAddDTO.setQuantity(2.);
+        orderAddDTO.setStatus(0);
+        orderAddDTO.setFrozenAmount(1001.02);
+        orderAddDTO.setFilledQuantity(0.);
+        orderService.save(orderAddDTO);
     }
 }
