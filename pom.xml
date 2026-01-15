@@ -20,6 +20,7 @@
         <module>service-common-client</module>
         <module>gateway</module>
         <module>common</module>
+        <module>common-biz</module>
     </modules>
 
     <properties>

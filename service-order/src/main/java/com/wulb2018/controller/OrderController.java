@@ -45,8 +45,8 @@ public class OrderController extends BaseRestController {
 
     @ApiOperation("添加委托订单表")
     @RequestMapping("add")
-    public ApiResponse<Boolean> add() {//@Valid OrderAddDTO orderAddDTO
-        ApiResponse<String> stringApiResponse = orderFeignClient.create(1L, 2, 3, 4, 5);
+    public ApiResponse<Boolean> add(@RequestBody OrderAddDTO orderAddDTO) {//@Valid OrderAddDTO orderAddDTO
+        //ApiResponse<String> stringApiResponse = orderFeignClient.create(1L, 2, 3, 4, 5);
 
         return ApiResponse.success();
 //        OrderAddDTO orderAddDTO = new OrderAddDTO();
