@@ -37,3 +37,7 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### web service config ####
+/html/.htaccess
+/html/nginx.htaccess

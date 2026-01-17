@@ -17,6 +17,8 @@ import lombok.experimental.Accessors;
 public class Order {
     @ApiModelProperty("委托订单ID")
     private Long id;
+    @ApiModelProperty("用户ID")
+    private Long userId;
     @ApiModelProperty("交易对ID")
     private Long symbolId;
     @ApiModelProperty("方向：1=买，2=卖")
