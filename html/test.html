@@ -66,13 +66,13 @@
         submitOrder(){
             let side = 1;
             let userId = 1;
-            let price = this.buyPrice;
-            let quantity = this.buyQuantity;
-            if (this.sellPrice > 0) {
+            let price = this.sellPrice;
+            let quantity = this.sellQuantity;
+            if (this.buyPrice > 0) {
                 side = 2;
                 userId = 2;
-                price = this.sellPrice;
-                quantity = this.sellQuantity;
+                price = this.buyPrice;
+                quantity = this.buyQuantity;
             }
             const vm = this
             $.ajax({
