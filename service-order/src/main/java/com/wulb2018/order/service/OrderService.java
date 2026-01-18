@@ -1,7 +1,11 @@
 package com.wulb2018.order.service;
 
 
+import com.wulb2018.biz.enums.Asset;
+import com.wulb2018.client.model.AccountFeignDTO;
 import com.wulb2018.client.order.OrderFeignClient;
+import com.wulb2018.client.settlement.AccountFeignClient;
+import com.wulb2018.common.model.ApiResponse;
 import com.wulb2018.common.service.BaseService;
 import com.wulb2018.order.mapper.OrderMapper;
 import com.wulb2018.client.model.OrderFeign;
@@ -31,6 +35,7 @@ public class OrderService extends BaseService<OrderMapper, Order> {
     private final OrderConvert orderConvert;
     private final OrderFeignConvert orderFeignConvert;
     private final OrderFeignClient orderFeignClient;
+    private final AccountFeignClient accountFeignClient;
 
 
     public OrderVO getOne(Serializable id) {
@@ -38,6 +43,16 @@ public class OrderService extends BaseService<OrderMapper, Order> {
     }
 
     public Boolean save(OrderAddDTO orderAddDTO) {
+        AccountFeignDTO accountFeignDTO = new AccountFeignDTO();
+        accountFeignDTO.setUserId(orderAddDTO.getUserId());
+        accountFeignDTO.setPrice(orderAddDTO.getPrice());
+        accountFeignDTO.setQuantity(orderAddDTO.getQuantity());
+        accountFeignDTO.setSymbolId(orderAddDTO.getSymbolId());
+        accountFeignDTO.setSide(orderAddDTO.getSide().getCode());
+        ApiResponse<Boolean> response = accountFeignClient.frozenAsset(accountFeignDTO);
+        if (!response.getData()) {
+            return false;
+        }
         Order entity = orderConvert.toEntity(orderAddDTO);
         boolean ret = this.save(entity);
         OrderFeign orderFeign = orderFeignConvert.toFeignRequest(entity);

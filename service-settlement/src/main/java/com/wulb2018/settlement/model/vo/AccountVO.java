@@ -27,12 +27,11 @@ public class AccountVO extends BaseVO<AccountVO> {
     @ApiModelProperty("资产币种")
     private String asset;
 
-    @ApiModelProperty("创建时间")
-    private LocalDateTime createdAt;
+    @ApiModelProperty("可用余额")
+    private Double available;
 
-    @ApiModelProperty("更新时间")
-    private LocalDateTime updatedAt;
-
+    @ApiModelProperty("冻结余额")
+    private Double frozen;
 
 }
 

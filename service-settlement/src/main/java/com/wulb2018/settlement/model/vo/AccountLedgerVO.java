@@ -36,11 +36,6 @@ public class AccountLedgerVO extends BaseVO<AccountLedgerVO> {
     @ApiModelProperty("变动后余额")
     private Double balanceAfter;
 
-    @ApiModelProperty("记账时间")
-    private LocalDateTime createdAt;
-
-    @ApiModelProperty("更新时间")
-    private LocalDateTime updatedAt;
 
 
 }

@@ -10,8 +10,8 @@ import lombok.Getter;
  */
 @Getter
 public enum OrderSide implements BaseEnum<Integer> {
-    SELL(1, "卖方"),
-    BUY(2, "买方"),
+    BUY(1, "买方"),
+    SELL(2, "卖方"),
     ;
 
     OrderSide(Integer code, String text) {

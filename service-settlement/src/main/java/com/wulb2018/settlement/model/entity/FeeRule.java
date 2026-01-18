@@ -1,47 +1,42 @@
 package com.wulb2018.settlement.model.entity;
 
-import java.time.LocalDateTime;
-
 import com.wulb2018.common.model.BaseEntity;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.ToString;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
- * 账户主表(t_account)-数据表对应实体类
+ * 手续费规则(t_fee_rule)-数据表对应实体类
  *
  * @author makejava
- * @since 2026-01-18 18:11:50
+ * @since 2026-01-18 19:21:57
  */
 @Data
 @Accessors(chain = true)
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class Account extends BaseEntity<Account> {
+public class FeeRule extends BaseEntity<FeeRule> {
 
     /**
-     * 用户ID
+     * 交易对
      */
-    private Long userId;
+    private Long symbolId;
 
     /**
-     * 资产币种
+     * Maker费率
      */
-    private String asset;
+    private Double makerFeeRate;
 
     /**
-     * 可用余额
+     * Taker费率
      */
-    private Double available;
+    private Double takerFeeRate;
 
     /**
-     * 冻结余额
+     * 是否生效
      */
-    private Double frozen;
-
-
+    private Integer status;
 
 }
 

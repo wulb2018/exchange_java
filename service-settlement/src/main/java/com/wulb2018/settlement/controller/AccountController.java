@@ -1,12 +1,14 @@
 package com.wulb2018.settlement.controller;
 
 
+import com.wulb2018.client.model.AccountFeignDTO;
 import com.wulb2018.common.controller.BaseRestController;
 import com.wulb2018.common.model.ApiResponse;
 import com.wulb2018.settlement.model.vo.AccountVO;
 import com.wulb2018.settlement.model.dto.AccountAddDTO;
 import com.wulb2018.settlement.model.dto.AccountUpdateDTO;
 import com.wulb2018.settlement.service.AccountService;
+import com.wulb2018.settlement.service.convert.AccountFeignConvert;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -29,6 +31,16 @@ import org.springframework.web.bind.annotation.*;
 public class AccountController extends BaseRestController {
 
     private final AccountService accountService;
+    private final AccountFeignConvert accountFeignConvert;
+
+
+    @ApiOperation("添加账户主表")
+    @PostMapping("frozen_asset")
+    public ApiResponse<Boolean> frozenAsset(@Valid @RequestBody AccountFeignDTO accountFeignDTO) {
+
+        boolean ret = accountService.frozenAsset(accountFeignDTO);
+        return ApiResponse.success(ret);
+    }
 
     @ApiOperation("查询详情")
     @GetMapping("get/{id}")

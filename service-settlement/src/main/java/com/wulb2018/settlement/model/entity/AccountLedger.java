@@ -45,15 +45,6 @@ public class AccountLedger extends BaseEntity<AccountLedger> {
      */
     private Double balanceAfter;
 
-    /**
-     * 记账时间
-     */
-    private LocalDateTime createdAt;
-
-    /**
-     * 更新时间
-     */
-    private LocalDateTime updatedAt;
 
 }
 

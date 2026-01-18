@@ -26,11 +26,8 @@ public class AccountAddDTO {
     @ApiModelProperty("资产币种")
     private String asset;
 
-    @ApiModelProperty("创建时间")
-    private LocalDateTime createdAt;
-
-    @ApiModelProperty("更新时间")
-    private LocalDateTime updatedAt;
+    @ApiModelProperty("冻结余额")
+    private Double frozen;
 
 }
 
