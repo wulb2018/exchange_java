@@ -1,4 +1,4 @@
-package com.wulb2018.config;
+package com.wulb2018.common.config;
 
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -12,9 +12,9 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.fasterxml.jackson.databind.type.ClassKey;
 import com.google.common.collect.Maps;
 
-import com.wulb2018.exception.GlobalExceptionHandler;
-import com.wulb2018.handler.ApiResponseWrapperReturnValueHandler;
-import com.wulb2018.model.BaseEnum;
+import com.wulb2018.common.exception.GlobalExceptionHandler;
+import com.wulb2018.common.handler.ApiResponseWrapperReturnValueHandler;
+import com.wulb2018.common.model.BaseEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.ObjectProvider;
@@ -268,12 +268,12 @@ public class WebAutoConfiguration implements WebMvcConfigurer {
             }
         });
     }
-
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        CorsRegistration registration = registry.addMapping("/**");
-        registration.allowedOrigins("*");
-        registration.allowedMethods("*").allowedHeaders("*");
-    }
+    //这里与网关冲突，导致重复多了一个Access-Control-Allow-Origin: *
+//    @Override
+//    public void addCorsMappings(CorsRegistry registry) {
+//        CorsRegistration registration = registry.addMapping("/**");
+//        registration.allowedOrigins("*");
+//        registration.allowedMethods("*").allowedHeaders("*");
+//    }
 
 }
