@@ -1,8 +1,10 @@
 package com.wulb2018;
 
-import com.wulb2018.enums.OrderSide;
-import com.wulb2018.model.Order;
-import com.wulb2018.service.SimpleMatchingService;
+import com.wulb2018.biz.enums.OrderSide;
+import com.wulb2018.client.model.OrderFeign;
+import com.wulb2018.engine.model.dto.OrderDTO;
+import com.wulb2018.engine.service.SimpleMatchingService;
+import com.wulb2018.engine.service.convert.OrderFeignConvert;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,18 +21,20 @@ public class AppTest
 
     @Resource
     private SimpleMatchingService simpleMatchingService;
+    @Resource
+    private OrderFeignConvert orderFeignConvert;
 
     @Test
     public void testSimpleMatching() {
-        Order sellOrder1 = new Order();
-        sellOrder1.setId(1L);
-        sellOrder1.setUserId(1L);
-        sellOrder1.setType(1);
-        sellOrder1.setSide(OrderSide.SELL);
-        sellOrder1.setPrice(80);
-        sellOrder1.setQuantity(1);
-        sellOrder1.setSymbolId(1L);
-        simpleMatchingService.addOrder(sellOrder1);
+        OrderDTO sellOrderDTO1 = new OrderDTO();
+        sellOrderDTO1.setId(1L);
+        sellOrderDTO1.setUserId(1L);
+        sellOrderDTO1.setType(1);
+        sellOrderDTO1.setSide(OrderSide.SELL);
+        sellOrderDTO1.setPrice(80);
+        sellOrderDTO1.setQuantity(1);
+        sellOrderDTO1.setSymbolId(1L);
+        simpleMatchingService.addOrder(sellOrderDTO1);
 
         //        Order sellOrder2 = new Order();
 //        sellOrder2.setId(3L);
@@ -42,15 +46,15 @@ public class AppTest
 //        sellOrder2.setSymbolId(1L);
 //        simpleMatchingService.addOrder(sellOrder2);
 
-        Order buyOrder1 = new Order();
-        buyOrder1.setId(2L);
-        buyOrder1.setUserId(2L);
-        buyOrder1.setType(1);
-        buyOrder1.setSide(OrderSide.BUY);
-        buyOrder1.setPrice(100);
-        buyOrder1.setQuantity(1);
-        buyOrder1.setSymbolId(1L);
-        simpleMatchingService.addOrder(buyOrder1);
+        OrderDTO buyOrderDTO1 = new OrderDTO();
+        buyOrderDTO1.setId(2L);
+        buyOrderDTO1.setUserId(2L);
+        buyOrderDTO1.setType(1);
+        buyOrderDTO1.setSide(OrderSide.BUY);
+        buyOrderDTO1.setPrice(100);
+        buyOrderDTO1.setQuantity(1);
+        buyOrderDTO1.setSymbolId(1L);
+        simpleMatchingService.addOrder(buyOrderDTO1);
 
         simpleMatchingService.testPrintTradeList();
     }
@@ -64,5 +68,15 @@ public class AppTest
             String line = scanner.nextLine();
             System.out.println("收到：" + line);
         }
+    }
+    @Test
+    public void testOrderFeignConvert() {
+        OrderFeign orderFeign = new OrderFeign();
+        orderFeign.setId(1L);
+        orderFeign.setQuantity(1);
+        orderFeign.setSide(1);
+
+        OrderDTO orderDTO = orderFeignConvert.toOrderDTO(orderFeign);
+        System.out.println(orderDTO);
     }
 }

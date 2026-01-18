@@ -22,5 +22,8 @@ spring:
         register-enabled: true
         service: ${spring.application.name}
         group: my-cloud
+mybatis-plus:
+  configuration:
+    default-enum-type-handler: com.wulb2018.common.handler.BaseEnumTypeHandler
 
 

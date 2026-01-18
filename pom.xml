@@ -21,6 +21,7 @@
         <module>gateway</module>
         <module>common</module>
         <module>common-biz</module>
+        <module>service-settlement</module>
     </modules>
 
     <properties>

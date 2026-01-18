@@ -1,14 +1,11 @@
 package com.wulb2018;
 
-import com.wulb2018.model.dto.OrderAddDTO;
-import com.wulb2018.service.OrderService;
-import jakarta.annotation.Resource;
+import com.wulb2018.order.model.dto.OrderAddDTO;
+import com.wulb2018.order.service.OrderService;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.time.LocalDateTime;
 
 
 /**

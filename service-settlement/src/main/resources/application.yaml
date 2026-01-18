@@ -1,0 +1,26 @@
+server:
+  port: 30012
+
+spring:
+  application:
+    name: service-settlement
+  config:
+    import:
+      - optional:nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}
+  cloud:
+    nacos:
+      config:
+        server-addr: 127.0.0.1:8848
+        namespace: a5b3e180-7db4-4201-aa49-ef3ca8bbab0a
+        prefix: ${spring.application.name}
+        file-extension: properties
+        group: my-cloud
+        enable-remote-sync-config: true
+      discovery:
+        server-addr: 127.0.0.1:8848
+        namespace: a5b3e180-7db4-4201-aa49-ef3ca8bbab0a
+        register-enabled: true
+        service: ${spring.application.name}
+        group: my-cloud
+
+

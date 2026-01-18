@@ -1,0 +1,58 @@
+package com.wulb2018.order.service;
+
+
+import cn.hutool.core.bean.BeanUtil;
+import com.wulb2018.client.OrderFeignClient;
+import com.wulb2018.common.service.BaseService;
+import com.wulb2018.order.mapper.OrderMapper;
+import com.wulb2018.client.model.OrderFeign;
+import com.wulb2018.order.model.dto.OrderAddDTO;
+import com.wulb2018.order.model.dto.OrderUpdateDTO;
+import com.wulb2018.order.model.entity.Order;
+import com.wulb2018.order.model.vo.OrderVO;
+import com.wulb2018.order.service.convert.OrderConvert;
+
+import com.wulb2018.order.service.convert.OrderFeignConvert;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.io.Serializable;
+import java.util.List;
+
+/**
+ * 委托订单表(t_order)-业务处理类
+ *
+ * @author makejava
+ * @since 2026-01-12 22:30:54
+ */
+@Service
+@RequiredArgsConstructor
+public class OrderService extends BaseService<OrderMapper, Order> {
+
+    private final OrderConvert orderConvert;
+    private final OrderFeignConvert orderFeignConvert;
+    private final OrderFeignClient orderFeignClient;
+
+
+    public OrderVO getOne(Serializable id) {
+        return orderConvert.toVo(super.getById(id));
+    }
+
+    public Boolean save(OrderAddDTO orderAddDTO) {
+        Order entity = orderConvert.toEntity(orderAddDTO);
+        boolean ret = this.save(entity);
+        OrderFeign orderFeign = orderFeignConvert.toFeignRequest(entity);
+        orderFeignClient.create(orderFeign);
+        return ret;
+    }
+
+    public Boolean updateById(OrderUpdateDTO orderUpdateDTO) {
+        return this.updateById(orderConvert.toEntity(orderUpdateDTO));
+    }
+
+    public Boolean delete(List<Long> idList) {
+        return this.removeByIds(idList);
+    }
+
+}
+
