@@ -42,8 +42,7 @@ public class OrderController extends BaseRestController {
 
     @ApiOperation("添加委托订单表")
     @RequestMapping("add")
-    public ApiResponse<Boolean> add(@Valid @RequestBody OrderAddDTO orderAddDTO) {//@Valid OrderAddDTO orderAddDTO
-        System.out.println("wwwwwwwwwwwwwwwwwwwww");
+    public ApiResponse<Boolean> add(@Valid @RequestBody OrderAddDTO orderAddDTO) {
         if (OrderSide.SELL.equals(orderAddDTO.getSide())) {
             orderAddDTO.setUserId(1L);
         } else {

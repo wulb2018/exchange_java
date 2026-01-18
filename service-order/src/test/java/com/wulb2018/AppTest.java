@@ -1,11 +1,14 @@
 package com.wulb2018;
 
+import com.wulb2018.biz.enums.OrderSide;
 import com.wulb2018.order.model.dto.OrderAddDTO;
 import com.wulb2018.order.service.OrderService;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.awt.*;
 
 
 /**
@@ -22,7 +25,7 @@ public class AppTest
         OrderAddDTO orderAddDTO = new OrderAddDTO();
         orderAddDTO.setUserId(1L);
         orderAddDTO.setSymbolId(1L);
-        orderAddDTO.setSide(1);
+        orderAddDTO.setSide(OrderSide.SELL);
         orderAddDTO.setType(1);
         orderAddDTO.setPrice(1000.01);
         orderAddDTO.setQuantity(2.);

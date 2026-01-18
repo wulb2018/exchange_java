@@ -1,8 +1,7 @@
 package com.wulb2018.order.service;
 
 
-import cn.hutool.core.bean.BeanUtil;
-import com.wulb2018.client.OrderFeignClient;
+import com.wulb2018.client.order.OrderFeignClient;
 import com.wulb2018.common.service.BaseService;
 import com.wulb2018.order.mapper.OrderMapper;
 import com.wulb2018.client.model.OrderFeign;

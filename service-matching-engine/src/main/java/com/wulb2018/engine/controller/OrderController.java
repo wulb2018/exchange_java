@@ -23,12 +23,8 @@ public class OrderController extends BaseRestController {
     private final SimpleMatchingService simpleMatchingService;
     private final OrderFeignConvert orderFeignConvert;
 
-    private long autoId = 0;
-
     @PostMapping("/create")
     public ApiResponse<String> create(@Valid @RequestBody OrderFeign orderFeign){
-//        autoId ++;
-//        order.setId(autoId);
         OrderDTO orderDTO = orderFeignConvert.toOrderDTO(orderFeign);
         simpleMatchingService.addOrder(orderDTO);
         simpleMatchingService.testPrintTradeList();

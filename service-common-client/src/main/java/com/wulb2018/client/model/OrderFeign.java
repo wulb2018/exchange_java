@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-@ApiModel("Order")
+@ApiModel("OrderFeign")
 public class OrderFeign {
     @ApiModelProperty("委托订单ID")
     private Long id;

@@ -29,6 +29,12 @@ spring:
             - Path=/api/service-order/**
           filters:
             - StripPrefix=2
+        - id: service-settlement
+          uri: lb://service-settlement
+          predicates:
+            - Path=/api/service-settlement/**
+          filters:
+            - StripPrefix=2
 
 logging:
   level:

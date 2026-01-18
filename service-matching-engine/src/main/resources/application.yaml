@@ -24,3 +24,8 @@ spring:
         group: my-cloud
 
 
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
+    org.springframework.cloud.loadbalancer: DEBUG
+    reactor.netty.http.client: DEBUG

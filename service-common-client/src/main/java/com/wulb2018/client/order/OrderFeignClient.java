@@ -1,4 +1,4 @@
-package com.wulb2018.client;
+package com.wulb2018.client.order;
 
 import com.wulb2018.common.model.ApiResponse;
 import com.wulb2018.client.model.OrderFeign;

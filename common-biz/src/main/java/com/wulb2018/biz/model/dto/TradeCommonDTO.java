@@ -1,4 +1,4 @@
-package com.wulb2018.biz.model;
+package com.wulb2018.biz.model.dto;
 
 import lombok.Data;
 
@@ -8,17 +8,45 @@ import lombok.Data;
  * @description TODO
  */
 @Data
-public class Trade {
+public class TradeCommonDTO {
+    /**
+     * 交易对
+     */
     private Long symbolId;
 
+    /**
+     * 买单ID
+     */
     private Long buyOrderId;
 
+    /**
+     * 卖单ID
+     */
     private Long sellOrderId;
 
+    /**
+     * 买方
+     */
+    private Long buyUserId;
+
+    /**
+     * 卖方
+     */
+    private Long sellUserId;
+
+    /**
+     * 成交价
+     */
     private Integer price;
 
+    /**
+     * 成交数量
+     */
     private Integer quantity;
 
+    /**
+     * 成交额
+     */
     private Integer amount;
 
     @Override
