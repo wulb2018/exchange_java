@@ -1,6 +1,7 @@
 package com.wulb2018.order.model.dto;
 
 import com.wulb2018.biz.enums.OrderSide;
+import com.wulb2018.biz.enums.OrderStatus;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -46,7 +47,7 @@ public class OrderUpdateDTO {
     private Double frozenAmount;
 
     @ApiModelProperty("0=新建，1=部分成交，2=全部成交，3=已取消")
-    private Integer status;
+    private OrderStatus status;
     
 
 }

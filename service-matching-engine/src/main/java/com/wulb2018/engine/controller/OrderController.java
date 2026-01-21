@@ -30,5 +30,10 @@ public class OrderController extends BaseRestController {
         simpleMatchingService.testPrintTradeList();
         return ApiResponse.success(simpleMatchingService.getTradeListString());
     }
+    @PostMapping("/init")
+    public ApiResponse<Boolean> init() {
+        simpleMatchingService.initOrderListMap();
+        return ApiResponse.success(true);
+    }
 
 }

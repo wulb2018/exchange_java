@@ -8,6 +8,8 @@ import com.wulb2018.engine.model.dto.OrderDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 /**
  * @author wulubin
  * @date 2026/1/17
@@ -26,5 +28,7 @@ public interface OrderFeignConvert {
     }
 
     OrderDTO toOrderDTO(OrderFeign orderFeign);
+
+    List<OrderDTO> toListOrderDTO(List<OrderFeign> orderFeignList);
 
 }

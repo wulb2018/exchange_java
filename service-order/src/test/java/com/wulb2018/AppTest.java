@@ -1,6 +1,7 @@
 package com.wulb2018;
 
 import com.wulb2018.biz.enums.OrderSide;
+import com.wulb2018.biz.enums.OrderStatus;
 import com.wulb2018.order.model.dto.OrderAddDTO;
 import com.wulb2018.order.service.OrderService;
 
@@ -29,7 +30,7 @@ public class AppTest
         orderAddDTO.setType(1);
         orderAddDTO.setPrice(1000.01);
         orderAddDTO.setQuantity(2.);
-        orderAddDTO.setStatus(0);
+        orderAddDTO.setStatus(OrderStatus.NEW);
         orderAddDTO.setFrozenAmount(1001.02);
         orderAddDTO.setFilledQuantity(0.);
         orderService.save(orderAddDTO);

@@ -1,9 +1,6 @@
 package com.wulb2018.common.config;
 
-import com.fasterxml.jackson.core.JacksonException;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonStreamContext;
+import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
@@ -79,6 +76,7 @@ public class WebAutoConfiguration implements WebMvcConfigurer {
     @Bean
     @Primary
     public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
+        //todo 有空看一下 Map<OrderSide, List<OrderFeign>> 的OrderSide为什么不会走这个
         SimpleModule simpleModule = new SimpleModule();
         SimpleDeserializersWrapper deserializers = new SimpleDeserializersWrapper();
         deserializers.addDeserializer(BaseEnum.class, new BaseEnumDeserializer());
@@ -142,12 +140,13 @@ public class WebAutoConfiguration implements WebMvcConfigurer {
     public static class BaseEnumSerializer extends JsonSerializer<BaseEnum> {
         @Override
         public void serialize(BaseEnum value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-            gen.writeStartObject();
-            gen.writeFieldName("code");
+            //todo 序列化和反序列化有空重新设计
+//            gen.writeStartObject();
+//            gen.writeFieldName("code");
             gen.writeObject(value.getCode());
-            gen.writeFieldName("text");
-            gen.writeString(value.getText());
-            gen.writeEndObject();
+//            gen.writeFieldName("text");
+//            gen.writeString(value.getText());
+//            gen.writeEndObject();
         }
     }
 

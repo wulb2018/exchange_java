@@ -3,6 +3,7 @@ package com.wulb2018.order.model.vo;
 import java.time.LocalDateTime;
 
 import com.wulb2018.biz.enums.OrderSide;
+import com.wulb2018.biz.enums.OrderStatus;
 import com.wulb2018.common.model.BaseVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -47,7 +48,7 @@ public class OrderVO extends BaseVO<OrderVO> {
     private Double frozenAmount;
 
     @ApiModelProperty("0=新建，1=部分成交，2=全部成交，3=已取消")
-    private Integer status;
+    private OrderStatus status;
 
     @ApiModelProperty("下单时间")
     private LocalDateTime createdDate;

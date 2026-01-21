@@ -2,6 +2,7 @@ package com.wulb2018.order.model.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.wulb2018.biz.enums.OrderSide;
+import com.wulb2018.biz.enums.OrderStatus;
 import com.wulb2018.common.model.BaseEntity;
 import lombok.Data;
 import lombok.ToString;
@@ -64,7 +65,7 @@ public class Order extends BaseEntity<Order> {
      * 0=新建，1=部分成交，2=全部成交，3=已取消
      */
     @TableField("`status`")
-    private Integer status;
+    private OrderStatus status;
 
 }
 

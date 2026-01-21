@@ -2,6 +2,8 @@ package com.wulb2018.order.controller;
 
 
 import com.wulb2018.biz.enums.OrderSide;
+import com.wulb2018.biz.enums.OrderStatus;
+import com.wulb2018.client.model.OrderFeign;
 import com.wulb2018.common.controller.BaseRestController;
 import com.wulb2018.common.model.ApiResponse;
 import com.wulb2018.order.model.vo.OrderVO;
@@ -50,8 +52,14 @@ public class OrderController extends BaseRestController {
         }
         orderAddDTO.setFilledQuantity(0.);
         orderAddDTO.setFrozenAmount(0.);
-        orderAddDTO.setStatus(0);
+        orderAddDTO.setStatus(OrderStatus.NEW);
         return ApiResponse.success(orderService.save(orderAddDTO));
+    }
+
+    @ApiOperation("获取初始化订单列表")
+    @RequestMapping("get_init_order_list")
+    public ApiResponse<List<OrderFeign>> getInitOrderList(){
+        return ApiResponse.success(orderService.getInitOrderList());
     }
 
     @ApiOperation("修改委托订单表")

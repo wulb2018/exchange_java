@@ -4,10 +4,15 @@ package com.wulb2018.engine.service;
 import com.wulb2018.biz.enums.OrderSide;
 import com.wulb2018.biz.model.dto.TradeCommonDTO;
 import com.wulb2018.client.convert.TradeFeignConvert;
+import com.wulb2018.client.model.OrderFeign;
 import com.wulb2018.client.model.TradeFeign;
+import com.wulb2018.client.order.OrderFeignClient;
 import com.wulb2018.client.settlement.TradeFeignClient;
+import com.wulb2018.common.model.ApiResponse;
 import com.wulb2018.engine.enums.TradeType;
 import com.wulb2018.engine.model.dto.OrderDTO;
+import com.wulb2018.engine.service.convert.OrderFeignConvert;
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,12 +31,18 @@ import java.util.TreeMap;
 public class SimpleMatchingService {
     private final TradeFeignClient tradeFeignClient;
     private final TradeFeignConvert tradeFeignConvert;
+    @Resource
+    private OrderFeignConvert orderFeignConvert;
+    @Resource
+    private OrderFeignClient orderFeignClient;
     //卖方需要先拿到最小的所以是拿第一个
     private final static TreeMap<Integer, TreeMap<Long, OrderDTO>> PRICE_AND_ORDER_ID_AND_SELL_ORDER_SORTED_MAP = new TreeMap<>();
     //买方需要先拿到最大的所以是拿最后一个
     private final static TreeMap<Integer, TreeMap<Long, OrderDTO>> PRICE_AND_ORDER_ID_AND_BUY_ORDER_SORTED_MAP = new TreeMap<>();
 
     private final static List<TradeCommonDTO> TRADE_DTO_LIST = new ArrayList<>();
+
+    private volatile boolean isLoadInit = false;
 
     private Integer lastTradePrice = 0;
 
@@ -208,6 +219,45 @@ public class SimpleMatchingService {
         TRADE_DTO_LIST.add(tradeCommonDTO);
         TradeFeign tradeFeign = tradeFeignConvert.toTradeFeign(tradeCommonDTO);
         tradeFeignClient.create(tradeFeign);
+    }
+
+    /**
+     * 在本服务启动时加载可以不考虑并发问题
+     */
+    public void loadInitOrderListMap() {
+        ApiResponse<List<OrderFeign>> orderFeignListRet = orderFeignClient.getInitOrderList();
+        List<OrderDTO> orderList = orderFeignConvert.toListOrderDTO(orderFeignListRet.getData());
+        for (OrderDTO orderDTO: orderList) {
+            addOrder(orderDTO);
+        }
+        isLoadInit = true;
+    }
+
+    public void initOrderListMap() {
+        //todo 这里的反序列化问题，值得在细细研究一下
+        System.out.println("接收到订单服务通知初始化数据");
+        Thread thread = new Thread(() -> {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            System.out.println("被订单服务通知初始化数据");
+            if (isLoadInit) {
+                System.out.println("数据已经被初始化1");
+                return;
+            }
+            synchronized(this) {
+                if (isLoadInit) {
+                    System.out.println("数据已经被初始化2");
+                    return;
+                }
+                //todo 这个有空看一下那个加两个 synchronized 的是为什么要加两个  看看我这边需不需要，就是看那个教程视频或者网上查一下
+                loadInitOrderListMap();
+            }
+            System.out.println("数据初始化完成");
+        });
+        thread.start();
     }
 
     public void testPrintTradeList() {

@@ -1,5 +1,6 @@
 package com.wulb2018.client.model;
 
+import com.wulb2018.biz.enums.OrderSide;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -21,7 +22,7 @@ public class OrderFeign {
     @ApiModelProperty("交易对ID")
     private Long symbolId;
     @ApiModelProperty("方向：1=买，2=卖")
-    private Integer side;
+    private OrderSide side;
     @ApiModelProperty("类型：1=限价")
     private Integer type;
     @ApiModelProperty("委托价格")

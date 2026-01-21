@@ -1,11 +1,16 @@
 package com.wulb2018.client.order;
 
-import com.wulb2018.common.model.ApiResponse;
+import com.wulb2018.biz.enums.OrderSide;
 import com.wulb2018.client.model.OrderFeign;
+import com.wulb2018.common.model.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author wulubin
@@ -13,10 +18,12 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @description TODO
  */
 @FeignClient(
-        name = "service-matching-engine",
-        contextId = "OrderFeignClient"
+        name = "service-order",
+        contextId = "OrderFeignClient",
+        path = "/order"
 )
 public interface OrderFeignClient {
-    @PostMapping("/order/create")
-    ApiResponse<String> create( @Valid @RequestBody OrderFeign orderFeign);
+
+    @RequestMapping("/get_init_order_list")
+    ApiResponse<List<OrderFeign>> getInitOrderList();
 }

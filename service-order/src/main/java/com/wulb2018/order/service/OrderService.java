@@ -1,9 +1,10 @@
 package com.wulb2018.order.service;
 
 
-import com.wulb2018.biz.enums.Asset;
+import com.wulb2018.biz.enums.OrderSide;
+import com.wulb2018.biz.enums.OrderStatus;
 import com.wulb2018.client.model.AccountFeignDTO;
-import com.wulb2018.client.order.OrderFeignClient;
+import com.wulb2018.client.matching.MatchingOrderFeignClient;
 import com.wulb2018.client.settlement.AccountFeignClient;
 import com.wulb2018.common.model.ApiResponse;
 import com.wulb2018.common.service.BaseService;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,7 +36,7 @@ public class OrderService extends BaseService<OrderMapper, Order> {
 
     private final OrderConvert orderConvert;
     private final OrderFeignConvert orderFeignConvert;
-    private final OrderFeignClient orderFeignClient;
+    private final MatchingOrderFeignClient matchingOrderFeignClient;
     private final AccountFeignClient accountFeignClient;
 
 
@@ -55,9 +57,31 @@ public class OrderService extends BaseService<OrderMapper, Order> {
         }
         Order entity = orderConvert.toEntity(orderAddDTO);
         boolean ret = this.save(entity);
-        OrderFeign orderFeign = orderFeignConvert.toFeignRequest(entity);
-        orderFeignClient.create(orderFeign);
+        OrderFeign orderFeign = orderFeignConvert.toOrderFeign(entity);
+        matchingOrderFeignClient.create(orderFeign);
         return ret;
+        //todo 有空统一改一下索引名称
+    }
+
+    public List<OrderFeign> getInitOrderList() {
+        List<Order> buyOrderList = lambdaQuery()
+                .in(Order::getStatus, List.of(OrderStatus.NEW, OrderStatus.PART_TRADE))
+                .eq(Order::getSide, OrderSide.BUY)
+                .orderByDesc(Order::getPrice)
+                //todo 加载多少条先待定
+                .list();
+
+
+        List<Order> sellOrderList = lambdaQuery()
+                .in(Order::getStatus, List.of(OrderStatus.NEW, OrderStatus.PART_TRADE))
+                .eq(Order::getSide, OrderSide.SELL)
+                .orderByDesc(Order::getPrice)
+                //todo 加载多少条先待定
+                .list();
+        List<OrderFeign> orderFeignList = new ArrayList<>();
+        orderFeignList.addAll(orderFeignConvert.toListOrderFeign(buyOrderList));
+        orderFeignList.addAll(orderFeignConvert.toListOrderFeign(sellOrderList));
+        return orderFeignList;
     }
 
     public Boolean updateById(OrderUpdateDTO orderUpdateDTO) {
