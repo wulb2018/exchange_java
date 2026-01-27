@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
@@ -23,6 +24,7 @@ import java.util.Random;
 @SpringBootTest
 public class AppTest
 {
+    private static final AtomicBoolean running = new AtomicBoolean(true);
     @Autowired
     private OrderService orderService;
     @Autowired
@@ -52,23 +54,51 @@ public class AppTest
     }
 
     @Test
-    public void testBatchCreateOrder() {
-        while (true) {
-            List<Double> prices = PriceGenerator.generatePrices(200., 1000, 0.01, 0.2, 0.01);
-            for (Double price: prices) {
-                OrderAddDTO orderAddDTO = new OrderAddDTO();
-                orderAddDTO.setUserId(getUserId());
-                orderAddDTO.setSymbolId(1L);
-                orderAddDTO.setSide(getOrderSide());
-                orderAddDTO.setType(1);
-                orderAddDTO.setPrice(price);
-                orderAddDTO.setQuantity(getQuantity() );
-                orderAddDTO.setStatus(OrderStatus.NEW);
-                orderAddDTO.setFrozenAmount(0.);
-                orderAddDTO.setFilledQuantity(0.);
-                orderService.save(orderAddDTO);
+    public void testPriceGenerator() {
+        // 注册 JVM 关闭钩子
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("接收到 JVM 关闭信号，准备安全停止...");
+            running.set(false);
+        }));
+        System.out.println("测试启动，进入无限循环");
+        PriceGenerator priceGenerator = new PriceGenerator(200., 0.01, 0.2, "0.01");
+        for (double price: priceGenerator) {
+            System.out.println(price);
+            if (!running.get()) {
+                break;
             }
         }
+        // 退出循环后做清理
+        System.out.println("循环结束，开始释放资源...");
+    }
+
+    @Test
+    public void testBatchCreateOrder() {
+        // 注册 JVM 关闭钩子
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("接收到 JVM 关闭信号，准备安全停止...");
+            running.set(false);
+        }));
+        System.out.println("测试启动，进入无限循环");
+        PriceGenerator priceGenerator = new PriceGenerator(200., 0.01, 0.2, "0.01");
+        for (double price: priceGenerator) {
+            OrderAddDTO orderAddDTO = new OrderAddDTO();
+            orderAddDTO.setUserId(getUserId());
+            orderAddDTO.setSymbolId(1L);
+            orderAddDTO.setSide(getOrderSide());
+            orderAddDTO.setType(1);
+            orderAddDTO.setPrice(price);
+            orderAddDTO.setQuantity(getQuantity() );
+            orderAddDTO.setStatus(OrderStatus.NEW);
+            orderAddDTO.setFrozenAmount(0.);
+            orderAddDTO.setFilledQuantity(0.);
+            orderService.save(orderAddDTO);
+            if (!running.get()) {
+                break;
+            }
+        }
+        // 退出循环后做清理
+        System.out.println("循环结束，开始释放资源...");
     }
 
     private Long getUserId() {
