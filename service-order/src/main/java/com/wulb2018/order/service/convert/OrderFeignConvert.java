@@ -1,10 +1,9 @@
 package com.wulb2018.order.service.convert;
 
 
-import com.wulb2018.client.model.OrderFeign;
+import com.wulb2018.biz.model.dto.OrderCommonDTO;
 import com.wulb2018.order.model.entity.Order;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 import java.util.List;
 
@@ -13,13 +12,15 @@ import java.util.List;
  * @date 2026/1/17
  * @description TODO
  */
-@Mapper(componentModel = "spring")
+@Mapper(
+        componentModel = "spring"
+)
 public interface OrderFeignConvert {
 
     //@Mapping(target = "side", expression = "java(order.getSide().getCode())")
-    OrderFeign toOrderFeign(Order order);
+    OrderCommonDTO toOrderFeign(Order order);
 
     //@Mapping(target = "side", expression = "java(order.getSide().getCode())")
-    List<OrderFeign> toListOrderFeign(List<Order> orderList);
+    List<OrderCommonDTO> toListOrderFeign(List<Order> orderList);
 
 }

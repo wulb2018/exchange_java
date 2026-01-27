@@ -1,7 +1,6 @@
 package com.wulb2018.client.settlement;
 
-import com.wulb2018.client.model.AccountFeignDTO;
-import com.wulb2018.client.model.TradeFeign;
+import com.wulb2018.biz.model.dto.AccountCommonDTO;
 import com.wulb2018.common.model.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -19,5 +18,5 @@ import org.springframework.web.bind.annotation.RequestBody;
 )
 public interface AccountFeignClient {
     @PostMapping("/account/frozen_asset")
-    ApiResponse<Boolean> frozenAsset(@Valid @RequestBody AccountFeignDTO accountFeignDTO);
+    ApiResponse<Boolean> frozenAsset(@Valid @RequestBody AccountCommonDTO accountCommonDTO);
 }

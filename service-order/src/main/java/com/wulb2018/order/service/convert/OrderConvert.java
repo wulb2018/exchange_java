@@ -5,7 +5,7 @@ import com.wulb2018.order.model.entity.Order;
 import com.wulb2018.order.model.vo.OrderVO;
 import com.wulb2018.order.model.dto.OrderDTO;
 import com.wulb2018.order.model.dto.OrderAddDTO;
-import com.wulb2018.order.model.dto.OrderUpdateDTO;
+import com.wulb2018.biz.model.dto.OrderUpdateDTO;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.wulb2018.client.model;
+package com.wulb2018.biz.model.dto;
 
 import com.wulb2018.biz.enums.OrderSide;
 import io.swagger.annotations.ApiModel;
@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 @ApiModel("OrderFeign")
-public class OrderFeign {
+public class OrderCommonDTO {
     @ApiModelProperty("委托订单ID")
     private Long id;
     @ApiModelProperty("用户ID")

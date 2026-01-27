@@ -2,12 +2,35 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <!-- import CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
-  <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+  <!-- import CSS  cdn.test   https://unpkg.com/element-ui/lib/theme-chalk/index.css-->
+  <link rel="stylesheet" href="http://cdn.test/element-ui@2.15.14/lib/theme-chalk/index.css">
+  <!-- https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js -->
+  <script src="http://cdn.test/libs/jquery/2.1.4/jquery.min.js"></script>
+  <!-- https://cdn.jsdelivr.net/npm/echarts@6.0.0/dist/echarts.min.js -->
+  <script src="http://cdn.test/npm/echarts@6.0.0/dist/echarts.min.js"></script>
+  <!-- <script src="/exchange-chart.js"></script> -->
+  <script src="/exchange-chart-option.js"></script>
 </head>
 <body>
+  
   <div id="app">
+    
+    <el-container>
+      <el-header>Header</el-header>
+      <el-container>
+          <!-- <div id="exchange-chart" ref="exchangeChart" style="height: 1000px;width: 2000px;"></div> -->
+          <div id="exchange-chart-new" ref="exchangeChartNew"  style="height: 1000px;width: 2000px;"></div>
+          <!-- <div id="exchange-chart-1" style="height: 1000px;width: 800px;"></div> -->
+        <!-- <el-aside width="20%">Aside</el-aside>
+        <el-main>
+
+        </el-main> -->
+      </el-container>
+    </el-container>
+    <template>
+      <el-radio v-model="userId" label="1">用户1</el-radio>
+      <el-radio v-model="userId" label="2">用户2</el-radio>
+    </template>
     <div class="demo-input-suffix">
         买单输入：
         <el-input
@@ -46,10 +69,15 @@
     </div>
   </div>
 </body>
+  <!-- <script src="/exchange-chart1.js"></script> -->
+  
   <!-- import Vue before Element -->
-  <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+   <!-- https://unpkg.com/vue@2.7.16/dist/vue.js -->
+  <script src="http://cdn.test/vue@2.7.16/dist/vue.js"></script>
   <!-- import JavaScript -->
-  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+   <!-- https://unpkg.com/element-ui/lib/index.js -->
+  <script src="https://unpkg.com/element-ui@2.15.14/lib/index.js"></script>
+  
   <script>
     new Vue({
       el: '#app',
@@ -60,6 +88,8 @@
             sellPrice : null,
             sellQuantity : null,
             responseMessage: "",
+            userId:1,
+            myChart: null,
          }
       },
       methods: {
@@ -72,9 +102,10 @@
                 price = this.sellPrice;
                 quantity = this.sellQuantity;
             }
+            let userId = this.userId;
             const vm = this
             $.ajax({
-                url:"http://192.168.1.5:30019/api/service-order/order/add",
+                url:"http://localhost:30019/api/service-order/order/add",
                 type: 'POST',
                 contentType: 'application/json; charset=UTF-8',
                 dataType: 'json',
@@ -83,7 +114,8 @@
                     side: side,
                     type: 1,
                     price: price,
-                    quantity: quantity
+                    quantity: quantity,
+                    userId: userId
                 }),
                 success:function(result){
                     // console.log(result);
@@ -94,8 +126,214 @@
                     vm.sellQuantity = null;
                 }
             });
+        },
+        appendCandlestickData(){
+          const vm = this;
+          let socket = new WebSocket('ws://localhost:30019/api/service-settlement/ws/get_last_some_candlestick_list');
+          // 监听事件
+          socket.onopen = function(event) {
+              console.log('get_last_some_candlestick_list Connection open ...');
+              socket.send('continue');
+          };
+
+          socket.onmessage = function(event) {
+              //console.log('get_last_some_candlestick_list New message: ' + event.data);
+              let data = JSON.parse(event.data);
+              //console.log(data)
+              // console.log(window.candlestickSplitData);
+              // let candlestickRawData = window.candlestickDataListToArray(data);
+              // window.candlestickSplitData = window.appendSplitData([candlestickRawData[candlestickRawData.length - 1]]);
+              // console.log(window.candlestickSplitData);
+              const candlestickList = data['candlestickList'];
+              const buyOrderBookList = data['buyOrderBookList'];
+              const sellOrderBookList = data['sellOrderBookList'];
+              let cateDataLen = candlestickList.length;
+              let candlestickCategoryDataLen = window.candlestickSplitData.categoryData.length;
+              if ((candlestickCategoryDataLen - 1 - cateDataLen) <0) {
+                return;
+              }
+              for (let i = 0; i < cateDataLen; i++) {
+                let newBar = candlestickList[i];
+                let isFind = false;
+                for(let j = candlestickCategoryDataLen - 1 - cateDataLen; j < candlestickCategoryDataLen; j ++) {
+                  if (window.candlestickSplitData.categoryData[j] == newBar['datetimeCategory']) {
+                    isFind = true;
+                    window.candlestickSplitData.values[j] = [
+                      newBar['openPrice'],
+                      newBar['closePrice'],
+                      newBar['lowestPrice'],
+                      newBar['highestPrice'],
+                    ];
+                    window.candlestickSplitData.volumes[j] = [
+                      i,
+                      newBar['volume'],
+                      newBar['openPrice'] > newBar['closePrice'] ? 1 : -1
+                    ];
+                  }
+                }
+                if (!isFind) {
+                  window.candlestickSplitData.categoryData.push(newBar['datetimeCategory']);
+                  window.candlestickSplitData.values.push([
+                    newBar['openPrice'],
+                    newBar['closePrice'],
+                    newBar['lowestPrice'],
+                    newBar['highestPrice'],
+                  ]);
+                  window.candlestickSplitData.volumes.push([
+                    i,
+                    newBar['volume'],
+                    newBar['openPrice'] > newBar['closePrice'] ? 1 : -1
+                  ]);
+                }
+              }
+              window.buildOrderBookAndDepthData(buyOrderBookList, sellOrderBookList);
+
+              let option = {
+                xAxis:[
+                  {
+                    id: 0,
+                    data:window.candlestickSplitData.categoryData
+                  },
+                  {
+                    id: 1,
+                    data:window.candlestickSplitData.categoryData
+                  }
+                ],
+                series:[
+                  {
+                    id:0,
+                    data: window.candlestickSplitData.values
+                  },
+                  {
+                      id:1,
+                      data: calculateMA(5, window.candlestickSplitData),
+                  },
+                  {
+                      id:2,
+                      data: calculateMA(10, window.candlestickSplitData),
+                  },
+                  {
+                      id:3,
+                      data: calculateMA(20, window.candlestickSplitData),
+                  },
+                  {
+                      id:4,
+                      data: calculateMA(30, window.candlestickSplitData),
+                  },
+                  {
+                      id:5,
+                      data: window.candlestickSplitData.volumes
+                  },
+                  {
+                      id:6,
+                      data: window.orderData,
+                  },
+                  {
+                      id:7,
+                      data: window.depthHighData,
+                  },
+                  {
+                      id:8,
+                      data: window.depthLowData,
+                  }
+                ]
+              };
+              vm.myChart.setOption(option);
+              setTimeout(() => {
+                socket.send('continue');
+              }, 200);
+              
+          };
+
+          socket.onerror = function(event) {
+              console.error('get_last_some_candlestick_list WebSocket error observed:', event);
+          };
+
+          socket.onclose = function(event) {
+              console.log('get_last_some_candlestick_list Connection closed.');
+          };
         }
+      },
+      mounted: function(){
+        console.log(`The initial count is onMounted.`)
+        const vm = this;
+        this.myChart = echarts.init(vm.$refs.exchangeChartNew);
+        $.ajax({
+            url:"http://localhost:30019/api/service-order/order/get_candlestick_init_data",
+            type: 'GET',
+            success:function(result){
+                if (result.code != '0') {
+                  return;
+                }
+                let data = JSON.parse(result.data);
+                //console.log(data)
+                window.getOption(vm.myChart, data);
+                vm.appendCandlestickData();
+            }
+        });
+
+
+        // // 创建一个WebSocket连接
+        // let socket = new WebSocket('ws://192.168.1.5:30019/api/service-order/ws/test');
+        // // 监听事件
+        // socket.onopen = function(event) {
+        //     console.log('Connection open ...');
+        // };
+
+        // socket.onmessage = function(event) {
+        //     console.log('New message: ' + event.data);
+        // };
+
+        // socket.onerror = function(event) {
+        //     console.error('WebSocket error observed:', event);
+        // };
+
+        // socket.onclose = function(event) {
+        //     console.log('Connection closed.');
+        // };
+
+
+        
+        
+        
+        
+
       }
     })
   </script>
+<style>
+  .el-header, .el-footer {
+    background-color: #B3C0D1;
+    color: #333;
+    text-align: center;
+    line-height: 60px;
+  }
+  
+  .el-aside {
+    background-color: #D3DCE6;
+    color: #333;
+    text-align: center;
+    line-height: 200px;
+  }
+  
+  .el-main {
+    background-color: #E9EEF3;
+    color: #333;
+    text-align: center;
+    line-height: 160px;
+  }
+  
+  body > .el-container {
+    margin-bottom: 40px;
+  }
+  
+  .el-container:nth-child(5) .el-aside,
+  .el-container:nth-child(6) .el-aside {
+    line-height: 260px;
+  }
+  
+  .el-container:nth-child(7) .el-aside {
+    line-height: 320px;
+  }
+</style>
 </html>

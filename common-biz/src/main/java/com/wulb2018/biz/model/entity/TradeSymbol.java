@@ -1,4 +1,4 @@
-package com.wulb2018.settlement.model.entity;
+package com.wulb2018.biz.model.entity;
 
 import com.wulb2018.common.model.BaseEntity;
 import lombok.Data;

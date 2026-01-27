@@ -1,6 +1,6 @@
 package com.wulb2018.settlement.service.convert;
 
-import com.wulb2018.client.model.AccountFeignDTO;
+import com.wulb2018.biz.model.dto.AccountCommonDTO;
 import com.wulb2018.settlement.model.dto.AccountUpdateDTO;
 import org.mapstruct.Mapper;
 
@@ -11,5 +11,5 @@ import org.mapstruct.Mapper;
  */
 @Mapper(componentModel = "spring")
 public interface AccountFeignConvert {
-    AccountUpdateDTO toAccountUpdateDTO(AccountFeignDTO accountFeignDTO);
+    AccountUpdateDTO toAccountUpdateDTO(AccountCommonDTO accountCommonDTO);
 }

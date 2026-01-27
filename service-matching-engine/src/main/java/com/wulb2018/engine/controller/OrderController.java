@@ -2,7 +2,7 @@ package com.wulb2018.engine.controller;
 
 import com.wulb2018.common.controller.BaseRestController;
 import com.wulb2018.common.model.ApiResponse;
-import com.wulb2018.client.model.OrderFeign;
+import com.wulb2018.biz.model.dto.OrderCommonDTO;
 import com.wulb2018.engine.model.dto.OrderDTO;
 import com.wulb2018.engine.service.SimpleMatchingService;
 import com.wulb2018.engine.service.convert.OrderFeignConvert;
@@ -24,10 +24,10 @@ public class OrderController extends BaseRestController {
     private final OrderFeignConvert orderFeignConvert;
 
     @PostMapping("/create")
-    public ApiResponse<String> create(@Valid @RequestBody OrderFeign orderFeign){
-        OrderDTO orderDTO = orderFeignConvert.toOrderDTO(orderFeign);
+    public ApiResponse<String> create(@Valid @RequestBody OrderCommonDTO orderCommonDTO){
+        OrderDTO orderDTO = orderFeignConvert.toOrderDTO(orderCommonDTO);
         simpleMatchingService.addOrder(orderDTO);
-        simpleMatchingService.testPrintTradeList();
+        //simpleMatchingService.testPrintTradeList();
         return ApiResponse.success(simpleMatchingService.getTradeListString());
     }
     @PostMapping("/init")

@@ -1,4 +1,4 @@
-package com.wulb2018.order.model.dto;
+package com.wulb2018.biz.model.dto;
 
 import com.wulb2018.biz.enums.OrderSide;
 import com.wulb2018.biz.enums.OrderStatus;

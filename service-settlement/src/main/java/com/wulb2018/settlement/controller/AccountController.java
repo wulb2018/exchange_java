@@ -1,7 +1,7 @@
 package com.wulb2018.settlement.controller;
 
 
-import com.wulb2018.client.model.AccountFeignDTO;
+import com.wulb2018.biz.model.dto.AccountCommonDTO;
 import com.wulb2018.common.controller.BaseRestController;
 import com.wulb2018.common.model.ApiResponse;
 import com.wulb2018.settlement.model.vo.AccountVO;
@@ -36,9 +36,9 @@ public class AccountController extends BaseRestController {
 
     @ApiOperation("添加账户主表")
     @PostMapping("frozen_asset")
-    public ApiResponse<Boolean> frozenAsset(@Valid @RequestBody AccountFeignDTO accountFeignDTO) {
+    public ApiResponse<Boolean> frozenAsset(@Valid @RequestBody AccountCommonDTO accountCommonDTO) {
 
-        boolean ret = accountService.frozenAsset(accountFeignDTO);
+        boolean ret = accountService.frozenAsset(accountCommonDTO);
         return ApiResponse.success(ret);
     }
 

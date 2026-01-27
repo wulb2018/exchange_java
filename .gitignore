@@ -41,3 +41,6 @@ build/
 ### web service config ####
 /html/.htaccess
 /html/nginx.htaccess
+/html/stock-DJI.json
+/html/exchange-chart.js
+/html/exchange-chart1.js

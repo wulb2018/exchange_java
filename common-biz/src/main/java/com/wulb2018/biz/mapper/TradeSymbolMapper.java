@@ -1,7 +1,7 @@
-package com.wulb2018.settlement.mapper;
+package com.wulb2018.biz.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.wulb2018.settlement.model.entity.TradeSymbol;
+import com.wulb2018.biz.model.entity.TradeSymbol;
 
 /**
  * 交易标的 / 交易对(t_trade_symbol)-数据库访问层

@@ -3,9 +3,9 @@ package com.wulb2018.engine.service;
 
 import com.wulb2018.biz.enums.OrderSide;
 import com.wulb2018.biz.model.dto.TradeCommonDTO;
-import com.wulb2018.client.convert.TradeFeignConvert;
-import com.wulb2018.client.model.OrderFeign;
-import com.wulb2018.client.model.TradeFeign;
+import com.wulb2018.biz.convert.TradeFeignConvert;
+import com.wulb2018.biz.model.dto.OrderCommonDTO;
+import com.wulb2018.biz.model.dto.TradeFeign;
 import com.wulb2018.client.order.OrderFeignClient;
 import com.wulb2018.client.settlement.TradeFeignClient;
 import com.wulb2018.common.model.ApiResponse;
@@ -74,6 +74,7 @@ public class SimpleMatchingService {
         priceAndOrderIdAndOrderSortedMap.put(orderDTO.getPrice(), orderIdAndOrderSortedMap);
     }
 
+    //todo 撮合这边的单位转换好像有问题，运行测试时在数据库中的保存的价格是2元左右，但是测试停止后重启撮合就变成200左右
     public void matching(){
         //卖方需要拿到最小的所以是拿第一个
         Map.Entry<Integer, TreeMap<Long, OrderDTO>> priceAndOrderIdAndMinSellOrderMapEntry = PRICE_AND_ORDER_ID_AND_SELL_ORDER_SORTED_MAP.firstEntry();
@@ -85,6 +86,7 @@ public class SimpleMatchingService {
         //买方需要先拿到最大的所以是拿最后一个
         Map.Entry<Integer, TreeMap<Long, OrderDTO>> priceAndOrderIdAndMaxBuyOrderMapEntry = PRICE_AND_ORDER_ID_AND_BUY_ORDER_SORTED_MAP.lastEntry();
         if (priceAndOrderIdAndMaxBuyOrderMapEntry == null) {
+            System.out.println("找不到买方最大价格订单");
             return;
         }
         Integer maxBuyPrice = priceAndOrderIdAndMaxBuyOrderMapEntry.getKey();
@@ -96,50 +98,67 @@ public class SimpleMatchingService {
             //获取卖方最早的（最小订单id）一个订单
             Map.Entry<Long, OrderDTO> earliestSellOrderEntry = priceAndOrderIdAndMinSellOrderMapEntry.getValue().firstEntry();
             if (earliestSellOrderEntry == null) {
+                System.out.println("找不到卖方最小价格的第一个订单");
                 return;
             }
-            OrderDTO earliestSellOrderFeign = earliestSellOrderEntry.getValue();
+            OrderDTO earliestSellOrder = earliestSellOrderEntry.getValue();
             //获取买方最早的（最小订单id）一个订单
             Map.Entry<Long, OrderDTO> earliestBuyOrderEntry = priceAndOrderIdAndMaxBuyOrderMapEntry.getValue().firstEntry();
             if (earliestBuyOrderEntry == null) {
+                System.out.println("找不到买方最大价格的第一个订单");
                 return;
             }
-            OrderDTO earliestBuyOrderFeign = earliestBuyOrderEntry.getValue();
+            OrderDTO earliestBuyOrder = earliestBuyOrderEntry.getValue();
 
-            if (earliestSellOrderFeign.getUserId().equals(earliestBuyOrderFeign.getUserId())) {
+            if (earliestSellOrder.getUserId().equals(earliestBuyOrder.getUserId())) {
                 //用户id相同则不进行交易
+                System.out.println("用户id相同则不进行交易");
+                //做撤销处理
+                if (earliestSellOrder.getId() > earliestBuyOrder.getId()) {
+                    //earliestBuyOrder
+                    orderFeignClient.cancelOrder(earliestBuyOrder.getId());
+                    removeBuyOrderFromMap(priceAndOrderIdAndMaxBuyOrderMapEntry, earliestBuyOrder, maxBuyPrice);
+                    System.out.println("撤销相同用户id的较早的订单，买方单");
+                } else {
+                    //earliestSellOrder
+                    orderFeignClient.cancelOrder(earliestSellOrder.getId());
+                    removeSellOrderFromMap(priceAndOrderIdAndMinSellOrderMapEntry, earliestSellOrder, minSellPrice);
+                    System.out.println("用户id相同则不进行交易");
+                    System.out.println("撤销相同用户id的较早的订单，卖方单");
+                }
                 return;
             }
-            if (!earliestSellOrderFeign.getSymbolId().equals(earliestBuyOrderFeign.getSymbolId())) {
+            if (!earliestSellOrder.getSymbolId().equals(earliestBuyOrder.getSymbolId())) {
                 //交易对不同不进行交易
+                System.out.println("交易对不同不进行交易");
                 return;
             }
-            lastTradePrice = getLastTradePrice(earliestSellOrderFeign, earliestBuyOrderFeign);
-            if (earliestSellOrderFeign.getQuantity().equals(earliestBuyOrderFeign.getQuantity())) {
+            lastTradePrice = getLastTradePrice(earliestSellOrder, earliestBuyOrder);
+            if (earliestSellOrder.getQuantity().equals(earliestBuyOrder.getQuantity())) {
                 //买方价格大于等于卖方价格，且数量相等，直接成交
                 System.out.println("数量相等，直接全部成交");
                 //添加成交记录
-                TradeCommonDTO tradeCommonDTO = createTrade(earliestSellOrderFeign, earliestBuyOrderFeign, lastTradePrice, TradeType.COMPLETE);
+                TradeCommonDTO tradeCommonDTO = createTrade(earliestSellOrder, earliestBuyOrder, lastTradePrice, TradeType.COMPLETE);
                 settlementTrade(tradeCommonDTO);
                 //分别在有序map中移除两个订单
                 //删除卖方订单
-                removeSellOrderFromMap(priceAndOrderIdAndMinSellOrderMapEntry, earliestSellOrderFeign, minSellPrice);
+                removeSellOrderFromMap(priceAndOrderIdAndMinSellOrderMapEntry, earliestSellOrder, minSellPrice);
                 //删除买方订单
-                removeBuyOrderFromMap(priceAndOrderIdAndMaxBuyOrderMapEntry, earliestBuyOrderFeign, maxBuyPrice);
-            } else if (earliestSellOrderFeign.getQuantity() > earliestBuyOrderFeign.getQuantity()) {
+                removeBuyOrderFromMap(priceAndOrderIdAndMaxBuyOrderMapEntry, earliestBuyOrder, maxBuyPrice);
+            } else if (earliestSellOrder.getQuantity() > earliestBuyOrder.getQuantity()) {
                 //卖方数量比买方大 卖方部分成交
                 System.out.println("卖方数量比买方大 卖方部分成交");
-                TradeCommonDTO tradeCommonDTO = createTrade(earliestSellOrderFeign, earliestBuyOrderFeign, lastTradePrice, TradeType.SELL_PART);
+                TradeCommonDTO tradeCommonDTO = createTrade(earliestSellOrder, earliestBuyOrder, lastTradePrice, TradeType.SELL_PART);
                 settlementTrade(tradeCommonDTO);
                 //删除买方订单
-                removeBuyOrderFromMap(priceAndOrderIdAndMaxBuyOrderMapEntry, earliestBuyOrderFeign, maxBuyPrice);
+                removeBuyOrderFromMap(priceAndOrderIdAndMaxBuyOrderMapEntry, earliestBuyOrder, maxBuyPrice);
             } else {
                 //买方数量比卖方大 买方部分成交
                 System.out.println("买方数量比卖方大 买方部分成交");
-                TradeCommonDTO tradeCommonDTO = createTrade(earliestSellOrderFeign, earliestBuyOrderFeign, lastTradePrice, TradeType.BUY_PART);
+                TradeCommonDTO tradeCommonDTO = createTrade(earliestSellOrder, earliestBuyOrder, lastTradePrice, TradeType.BUY_PART);
                 settlementTrade(tradeCommonDTO);
                 //删除卖方订单
-                removeSellOrderFromMap(priceAndOrderIdAndMinSellOrderMapEntry, earliestSellOrderFeign, minSellPrice);
+                removeSellOrderFromMap(priceAndOrderIdAndMinSellOrderMapEntry, earliestSellOrder, minSellPrice);
             }
         }
     }
@@ -218,14 +237,14 @@ public class SimpleMatchingService {
     private void settlementTrade(TradeCommonDTO tradeCommonDTO) {
         TRADE_DTO_LIST.add(tradeCommonDTO);
         TradeFeign tradeFeign = tradeFeignConvert.toTradeFeign(tradeCommonDTO);
-        tradeFeignClient.create(tradeFeign);
+        tradeFeignClient.settlementTrade(tradeFeign);
     }
 
     /**
      * 在本服务启动时加载可以不考虑并发问题
      */
     public void loadInitOrderListMap() {
-        ApiResponse<List<OrderFeign>> orderFeignListRet = orderFeignClient.getInitOrderList();
+        ApiResponse<List<OrderCommonDTO>> orderFeignListRet = orderFeignClient.getInitOrderList();
         List<OrderDTO> orderList = orderFeignConvert.toListOrderDTO(orderFeignListRet.getData());
         for (OrderDTO orderDTO: orderList) {
             addOrder(orderDTO);

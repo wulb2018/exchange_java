@@ -1,15 +1,15 @@
-package com.wulb2018.settlement.service.convert;
+package com.wulb2018.biz.service.convert;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.wulb2018.settlement.model.entity.TradeSymbol;
-import com.wulb2018.settlement.model.vo.TradeSymbolVO;
-import com.wulb2018.settlement.model.dto.TradeSymbolDTO;
-import com.wulb2018.settlement.model.dto.TradeSymbolAddDTO;
-import com.wulb2018.settlement.model.dto.TradeSymbolUpdateDTO;
 
 import java.util.List;
 
+import com.wulb2018.biz.model.dto.TradeSymbolAddDTO;
+import com.wulb2018.biz.model.dto.TradeSymbolDTO;
+import com.wulb2018.biz.model.dto.TradeSymbolUpdateDTO;
+import com.wulb2018.biz.model.entity.TradeSymbol;
+import com.wulb2018.biz.model.vo.TradeSymbolVO;
 import org.mapstruct.Mapper;
 
 /**

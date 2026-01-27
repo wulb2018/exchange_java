@@ -1,4 +1,4 @@
-package com.wulb2018.client.model;
+package com.wulb2018.biz.model.dto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 @ApiModel("AccountFeignDTO")
-public class AccountFeignDTO {
+public class AccountCommonDTO {
 
     @ApiModelProperty("用户ID")
     private Long userId;

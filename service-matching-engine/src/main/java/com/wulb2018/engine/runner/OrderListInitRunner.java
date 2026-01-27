@@ -1,21 +1,12 @@
 package com.wulb2018.engine.runner;
 
-import com.wulb2018.biz.enums.OrderSide;
-import com.wulb2018.client.model.OrderFeign;
-import com.wulb2018.client.order.OrderFeignClient;
-import com.wulb2018.common.model.ApiResponse;
-import com.wulb2018.engine.model.dto.OrderDTO;
 import com.wulb2018.engine.service.SimpleMatchingService;
-import com.wulb2018.engine.service.convert.OrderFeignConvert;
 import feign.FeignException;
+import feign.codec.DecodeException;
 import jakarta.annotation.Resource;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author wulubin
@@ -37,6 +28,8 @@ public class OrderListInitRunner implements ApplicationRunner {
 
             simpleMatchingService.loadInitOrderListMap();
             System.out.println("拉取数据成功，完成初始化");
+        } catch (DecodeException e) {
+            throw e;
         } catch (FeignException e) {
             System.out.println("拉取数据失败，未完成初始化");
         }

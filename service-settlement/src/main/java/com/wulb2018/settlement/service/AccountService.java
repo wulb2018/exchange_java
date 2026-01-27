@@ -1,14 +1,15 @@
 package com.wulb2018.settlement.service;
 
+import com.wulb2018.biz.service.TradeSymbolService;
 import com.wulb2018.biz.enums.OrderSide;
-import com.wulb2018.client.model.AccountFeignDTO;
+import com.wulb2018.biz.model.dto.AccountCommonDTO;
 import com.wulb2018.common.service.BaseService;
 import com.wulb2018.settlement.mapper.AccountMapper;
 import com.wulb2018.settlement.model.dto.AccountAddDTO;
 import com.wulb2018.settlement.model.dto.AccountUpdateDTO;
 import com.wulb2018.settlement.model.entity.Account;
 import com.wulb2018.settlement.model.entity.FeeRule;
-import com.wulb2018.settlement.model.entity.TradeSymbol;
+import com.wulb2018.biz.model.entity.TradeSymbol;
 import com.wulb2018.settlement.model.vo.AccountVO;
 import com.wulb2018.settlement.service.convert.AccountConvert;
 import lombok.RequiredArgsConstructor;
@@ -33,16 +34,16 @@ public class AccountService extends BaseService<AccountMapper, Account> {
 
     /**
      * 冻结资产
-     * @param accountFeignDTO
+     * @param accountCommonDTO
      * @return
      */
-    public boolean frozenAsset(AccountFeignDTO accountFeignDTO) {
-        TradeSymbol tradeSymbol = tradeSymbolService.getById(accountFeignDTO.getSymbolId());
+    public boolean frozenAsset(AccountCommonDTO accountCommonDTO) {
+        TradeSymbol tradeSymbol = tradeSymbolService.getById(accountCommonDTO.getSymbolId());
         if (tradeSymbol == null) {
             return false;
         }
         String baseAsset;
-        if (OrderSide.BUY.getCode().equals(accountFeignDTO.getSide())) {
+        if (OrderSide.BUY.getCode().equals(accountCommonDTO.getSide())) {
             //买方冻结计价资产
             baseAsset = tradeSymbol.getQuoteAsset();
         } else {
@@ -50,15 +51,15 @@ public class AccountService extends BaseService<AccountMapper, Account> {
             baseAsset = tradeSymbol.getBaseAsset();
         }
 
-        FeeRule feeRule = feeRuleService.getOneBySymbolId(accountFeignDTO.getSymbolId());
+        FeeRule feeRule = feeRuleService.getOneBySymbolId(accountCommonDTO.getSymbolId());
         if (feeRule == null) {
             return false;
         }
 
         double maxFeeRate = Math.max(feeRule.getMakerFeeRate(), feeRule.getTakerFeeRate());
-        Double frozen = accountFeignDTO.getQuantity() * accountFeignDTO.getPrice() * (1 + maxFeeRate);
+        Double frozen = accountCommonDTO.getQuantity() * accountCommonDTO.getPrice() * (1 + maxFeeRate);
         int updateNum = getBaseMapper()
-                .frozenAsset(frozen, LocalDateTime.now(), accountFeignDTO.getUserId(), baseAsset);
+                .frozenAsset(frozen, LocalDateTime.now(), accountCommonDTO.getUserId(), baseAsset);
         return updateNum > 0;
     }
 

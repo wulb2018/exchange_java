@@ -2,11 +2,10 @@ package com.wulb2018.engine.service.convert;
 
 
 import com.wulb2018.biz.enums.OrderSide;
-import com.wulb2018.client.model.OrderFeign;
+import com.wulb2018.biz.model.dto.OrderCommonDTO;
 
 import com.wulb2018.engine.model.dto.OrderDTO;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 import java.util.List;
 
@@ -27,8 +26,8 @@ public interface OrderFeignConvert {
         return OrderSide.fromCode(side);
     }
 
-    OrderDTO toOrderDTO(OrderFeign orderFeign);
+    OrderDTO toOrderDTO(OrderCommonDTO orderCommonDTO);
 
-    List<OrderDTO> toListOrderDTO(List<OrderFeign> orderFeignList);
+    List<OrderDTO> toListOrderDTO(List<OrderCommonDTO> orderCommonDTOList);
 
 }

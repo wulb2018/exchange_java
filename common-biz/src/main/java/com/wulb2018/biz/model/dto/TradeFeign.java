@@ -1,4 +1,4 @@
-package com.wulb2018.client.model;
+package com.wulb2018.biz.model.dto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

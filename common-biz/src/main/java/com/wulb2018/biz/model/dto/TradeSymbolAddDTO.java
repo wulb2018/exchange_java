@@ -1,24 +1,22 @@
-package com.wulb2018.settlement.model.vo;
+package com.wulb2018.biz.model.dto;
 
-
-import com.wulb2018.common.model.BaseVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 
+
 /**
- * 交易标的 / 交易对(t_trade_symbol)-展现层实体类
+ * 交易标的 / 交易对(t_trade_symbol)-添加实体参数类
  *
  * @author makejava
  * @since 2026-01-18 19:47:05
  */
 @Data
 @Accessors(chain = true)
-@ToString(callSuper = true)
-@ApiModel("TradeSymbolVO")
-public class TradeSymbolVO extends BaseVO<TradeSymbolVO> {
+@ApiModel("TradeSymbolAddDTO")
+public class TradeSymbolAddDTO {
+
 
     @ApiModelProperty("交易对标识，如 BTC/USDT")
     private String symbol;

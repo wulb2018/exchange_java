@@ -1,7 +1,7 @@
 package com.wulb2018;
 
 import com.wulb2018.biz.enums.OrderSide;
-import com.wulb2018.client.model.OrderFeign;
+import com.wulb2018.biz.model.dto.OrderCommonDTO;
 import com.wulb2018.engine.model.dto.OrderDTO;
 import com.wulb2018.engine.service.SimpleMatchingService;
 import com.wulb2018.engine.service.convert.OrderFeignConvert;
@@ -71,12 +71,12 @@ public class AppTest
     }
     @Test
     public void testOrderFeignConvert() {
-        OrderFeign orderFeign = new OrderFeign();
-        orderFeign.setId(1L);
-        orderFeign.setQuantity(1);
-        orderFeign.setSide(1);
+        OrderCommonDTO orderCommonDTO = new OrderCommonDTO();
+        orderCommonDTO.setId(1L);
+        orderCommonDTO.setQuantity(1);
+        orderCommonDTO.setSide(1);
 
-        OrderDTO orderDTO = orderFeignConvert.toOrderDTO(orderFeign);
+        OrderDTO orderDTO = orderFeignConvert.toOrderDTO(orderCommonDTO);
         System.out.println(orderDTO);
     }
 }

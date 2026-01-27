@@ -1,6 +1,9 @@
 package com.wulb2018.common.config;
 
-import com.fasterxml.jackson.core.*;
+import com.fasterxml.jackson.core.JacksonException;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonStreamContext;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
@@ -8,7 +11,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.fasterxml.jackson.databind.type.ClassKey;
 import com.google.common.collect.Maps;
-
 import com.wulb2018.common.exception.GlobalExceptionHandler;
 import com.wulb2018.common.handler.ApiResponseWrapperReturnValueHandler;
 import com.wulb2018.common.model.BaseEnum;
@@ -29,8 +31,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.filter.RequestContextFilter;
-import org.springframework.web.servlet.config.annotation.CorsRegistration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
@@ -87,6 +87,11 @@ public class WebAutoConfiguration implements WebMvcConfigurer {
                 .serializerByType(Long.class, ToStringSerializer.instance)
                 .modulesToInstall(simpleModule);
     }
+
+//    @Bean
+//    public Decoder feignDecoder(ObjectProvider<HttpMessageConverters> messageConverters) {
+//        return new OptionalDecoder((new ResponseEntityDecoder(new ApiResponseDecoder(new SpringDecoder(messageConverters)))));
+//    }
 
     @Bean
     public ApiResponseWrapperReturnValueHandler apiResponseWrapperReturnValueHandler(

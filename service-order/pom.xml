@@ -7,10 +7,10 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>service-orderFeign</artifactId>
+    <artifactId>service-orderCommonDTO</artifactId>
     <packaging>jar</packaging>
 
-    <name>service-orderFeign</name>
+    <name>service-orderCommonDTO</name>
     <url>http://maven.apache.org</url>
 
     <properties>
@@ -37,6 +37,12 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-loadbalancer</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>com.wulb2018</groupId>
             <artifactId>service-common-client</artifactId>

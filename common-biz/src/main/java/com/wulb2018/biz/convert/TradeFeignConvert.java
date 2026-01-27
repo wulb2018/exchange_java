@@ -1,7 +1,7 @@
-package com.wulb2018.client.convert;
+package com.wulb2018.biz.convert;
 
 import com.wulb2018.biz.model.dto.TradeCommonDTO;
-import com.wulb2018.client.model.TradeFeign;
+import com.wulb2018.biz.model.dto.TradeFeign;
 import org.mapstruct.Mapper;
 
 /**
@@ -13,7 +13,6 @@ import org.mapstruct.Mapper;
 public interface TradeFeignConvert {
 
     TradeCommonDTO toOrderCommonDTO(TradeFeign tradeFeign);
-
 
     TradeFeign toTradeFeign(TradeCommonDTO tradeCommonDTO);
 }
