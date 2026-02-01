@@ -11,7 +11,7 @@ import com.wulb2018.biz.model.entity.TradeSymbol;
 import com.wulb2018.biz.model.vo.CandlestickVO;
 import com.wulb2018.biz.service.TradeSymbolService;
 import com.wulb2018.biz.util.DataPrecisionConvert;
-import com.wulb2018.client.matching.MatchingOrderFeignClient;
+import com.wulb2018.client.matching.MatchingFeignClient;
 import com.wulb2018.client.settlement.AccountFeignClient;
 import com.wulb2018.client.settlement.TradeFeignClient;
 import com.wulb2018.common.model.ApiResponse;
@@ -45,7 +45,7 @@ public class OrderService extends BaseService<OrderMapper, Order> {
 
     private final OrderConvert orderConvert;
     private final OrderFeignConvert orderFeignConvert;
-    private final MatchingOrderFeignClient matchingOrderFeignClient;
+    private final MatchingFeignClient matchingFeignClient;
     private final AccountFeignClient accountFeignClient;
     private final TradeSymbolService tradeSymbolService;
     private final TradeFeignClient tradeFeignClient;
@@ -56,12 +56,17 @@ public class OrderService extends BaseService<OrderMapper, Order> {
     }
 
     public Boolean save(OrderAddDTO orderAddDTO) {
+
         AccountCommonDTO accountCommonDTO = new AccountCommonDTO();
         accountCommonDTO.setUserId(orderAddDTO.getUserId());
         accountCommonDTO.setPrice(orderAddDTO.getPrice());
         accountCommonDTO.setQuantity(orderAddDTO.getQuantity());
         accountCommonDTO.setSymbolId(orderAddDTO.getSymbolId());
         accountCommonDTO.setSide(orderAddDTO.getSide().getCode());
+        TradeSymbol symbol = tradeSymbolService.getById(accountCommonDTO.getSymbolId());
+        if (symbol == null) {
+            return false;
+        }
         ApiResponse<Boolean> response = accountFeignClient.frozenAsset(accountCommonDTO);
         if (!response.getData()) {
             return false;
@@ -69,7 +74,10 @@ public class OrderService extends BaseService<OrderMapper, Order> {
         Order entity = orderConvert.toEntity(orderAddDTO);
         boolean ret = this.save(entity);
         OrderCommonDTO orderCommonDTO = orderFeignConvert.toOrderFeign(entity);
-        matchingOrderFeignClient.create(orderCommonDTO);
+        //做价格精度转换
+        orderCommonDTO.setPrice(DataPrecisionConvert.decimalToInt(entity.getPrice(), symbol.getPricePrecision()));
+        orderCommonDTO.setQuantity(DataPrecisionConvert.decimalToInt(entity.getQuantity(), symbol.getQuantityPrecision()));
+        matchingFeignClient.addOrder(orderCommonDTO);
         return ret;
         //todo 有空统一改一下索引名称
     }

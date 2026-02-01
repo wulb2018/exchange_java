@@ -30,7 +30,7 @@ public class AppTest
     @Autowired
     private TradeFeignClient tradeFeignClient;
 
-    private int controlPrice = 20000;
+    //private int controlPrice = 20000;
 
     @Test
     public void testClient() {
@@ -93,6 +93,7 @@ public class AppTest
             orderAddDTO.setFrozenAmount(0.);
             orderAddDTO.setFilledQuantity(0.);
             orderService.save(orderAddDTO);
+            //break;
             if (!running.get()) {
                 break;
             }
@@ -117,18 +118,18 @@ public class AppTest
         return site == 1 ? OrderSide.BUY : OrderSide.SELL;
     }
 
-    private Double getPrice() {
-        PriceGenerator.generatePrices(200., 1000, 0.01, 0.2, 0.01);
-        Random random = new Random();
-        int min = randomInt(random, controlPrice - 5000, controlPrice - 1);
-        int max = randomInt(random, controlPrice + 1, controlPrice + 10000);
-        int intValue = min + random.nextInt(max - min + 1);
-        //控制价格稳定
-        if (intValue< 1000000 && intValue > 10000) {
-            controlPrice = intValue / 2;
-        }
-        return intValue * 1.0 / 100;
-    }
+//    private Double getPrice() {
+//        PriceGenerator.generatePrices(200., 1000, 0.01, 0.2, 0.01);
+//        Random random = new Random();
+//        int min = randomInt(random, controlPrice - 5000, controlPrice - 1);
+//        int max = randomInt(random, controlPrice + 1, controlPrice + 10000);
+//        int intValue = min + random.nextInt(max - min + 1);
+//        //控制价格稳定
+//        if (intValue< 1000000 && intValue > 10000) {
+//            controlPrice = intValue / 2;
+//        }
+//        return intValue * 1.0 / 100;
+//    }
 
     private int randomInt(Random random, int min, int max) {
         return min + random.nextInt(max - min + 1);

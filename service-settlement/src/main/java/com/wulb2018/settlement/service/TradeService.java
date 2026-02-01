@@ -22,7 +22,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static com.wulb2018.settlement.constant.DateTimeFormatterConst.*;
+import static com.wulb2018.biz.constant.DateTimeFormatterConst.*;
 
 /**
  * 成交记录(t_trade)-业务处理类

@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.RequestBody;
  */
 @FeignClient(
         name = "service-matching-engine",
-        contextId = "MatchingOrderFeignClient",
-        path = "/order"
+        contextId = "MatchingFeignClient",
+        path = "/matching"
 )
-public interface MatchingOrderFeignClient {
-    @PostMapping("/create")
-    ApiResponse<String> create( @Valid @RequestBody OrderCommonDTO orderCommonDTO);
+public interface MatchingFeignClient {
+    @PostMapping("/add_order")
+    ApiResponse<String> addOrder(@Valid @RequestBody OrderCommonDTO orderCommonDTO);
 
     @PostMapping("/init")
     ApiResponse<Boolean> init();

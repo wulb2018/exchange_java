@@ -1,4 +1,4 @@
-package com.wulb2018.settlement.constant;
+package com.wulb2018.biz.constant;
 
 import java.time.format.DateTimeFormatter;
 

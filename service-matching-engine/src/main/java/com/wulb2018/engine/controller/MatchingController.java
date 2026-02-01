@@ -17,14 +17,14 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/order")
-public class OrderController extends BaseRestController {
+@RequestMapping("/matching")
+public class MatchingController extends BaseRestController {
 
     private final SimpleMatchingService simpleMatchingService;
     private final OrderFeignConvert orderFeignConvert;
 
-    @PostMapping("/create")
-    public ApiResponse<String> create(@Valid @RequestBody OrderCommonDTO orderCommonDTO){
+    @PostMapping("/add_order")
+    public ApiResponse<String> addOrder(@Valid @RequestBody OrderCommonDTO orderCommonDTO){
         OrderDTO orderDTO = orderFeignConvert.toOrderDTO(orderCommonDTO);
         simpleMatchingService.addOrder(orderDTO);
         //simpleMatchingService.testPrintTradeList();
