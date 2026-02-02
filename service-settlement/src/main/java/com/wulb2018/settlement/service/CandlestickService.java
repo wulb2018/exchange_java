@@ -122,6 +122,22 @@ public class CandlestickService extends BaseService<CandlestickMapper, Candlesti
         return process.buildZeroVolumeCandlestickVOMap(startDateTime, endDateTime);
     }
 
+    public void safeguardCandlestickCompleteness(Trade trade) {
+        CandlestickType[] candlestickTypes = CandlestickType.values();
+        //缓存维护 最后几个蜡烛图
+        for (CandlestickType candlestickType: candlestickTypes) {
+            String tradeDatetimeCategory = buildNextDatetimeCategory(trade.getCreateDate(), candlestickType);
+            Candlestick lastOneCandlestick = getLastOne(candlestickType);
+            generateAndSaveNewCandlestick(lastOneCandlestick, tradeDatetimeCategory, candlestickType, trade, trade.getCreateDate());
+        }
+    }
+
+    private String buildNextDatetimeCategory(LocalDateTime tradeCreateDate, CandlestickType candlestickType) {
+        ICandlestickTypeProcess candlestickTypeProcess = candlestickType.getCandlestickTypeProcess();
+        LocalDateTime roundCreateDate = candlestickTypeProcess.setRoundDateTime(tradeCreateDate);
+        return candlestickTypeProcess.getFormattedDatetime(roundCreateDate);
+    }
+
     public CandlestickVO getOne(Serializable id) {
         return candlestickConvert.toVo(super.getById(id));
     }

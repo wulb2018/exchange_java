@@ -1,11 +1,10 @@
 package com.wulb2018.settlement.model.entity;
 
-import java.time.LocalDateTime;
-
+import com.wulb2018.biz.enums.OrderSide;
 import com.wulb2018.common.model.BaseEntity;
 import lombok.Data;
-import lombok.ToString;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 /**
@@ -59,7 +58,10 @@ public class Trade extends BaseEntity<Trade> {
      * 成交额
      */
     private Double amount;
-
+    /**
+     * maker方向，是买方还是卖方
+     */
+    private OrderSide makerSide;
 
 }
 

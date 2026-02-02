@@ -1,5 +1,6 @@
 package com.wulb2018.biz.model.dto;
 
+import com.wulb2018.biz.enums.OrderSide;
 import lombok.Data;
 
 /**
@@ -48,6 +49,10 @@ public class TradeCommonDTO {
      * 成交额
      */
     private Integer amount;
+    /**
+     * maker方向，是买方还是卖方
+     */
+    private OrderSide makerSide;
 
     @Override
     public String toString(){

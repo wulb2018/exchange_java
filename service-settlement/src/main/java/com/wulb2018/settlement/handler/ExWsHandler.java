@@ -34,6 +34,10 @@ public class ExWsHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws IOException {
+        Map<String, Object> attrs = session.getAttributes();
+        CandlestickType candlestickType = (CandlestickType) attrs.get("candlestickType");
+
+        System.out.println(candlestickType);
         // 建立连接
         System.out.println("前端链接ws成功");
         //session.sendMessage(new TextMessage("ok"));

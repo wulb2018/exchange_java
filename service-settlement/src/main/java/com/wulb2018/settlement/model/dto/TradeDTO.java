@@ -1,7 +1,6 @@
 package com.wulb2018.settlement.model.dto;
 
-import java.time.LocalDateTime;
-
+import com.wulb2018.biz.enums.OrderSide;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -43,7 +42,8 @@ public class TradeDTO {
 
     @ApiModelProperty("成交额")
     private Double amount;
-
+    @ApiModelProperty("maker方向，是买方还是卖方")
+    private OrderSide makerSide;
 
 }
 

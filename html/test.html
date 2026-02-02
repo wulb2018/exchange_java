@@ -129,7 +129,7 @@
         },
         appendCandlestickData(){
           const vm = this;
-          let socket = new WebSocket('ws://localhost:30019/api/service-settlement/ws/get_last_some_candlestick_list');
+          let socket = new WebSocket('ws://localhost:30019/api/service-settlement/ws/get_last_some_candlestick_list?candlestickType=second5');
           // 监听事件
           socket.onopen = function(event) {
               console.log('get_last_some_candlestick_list Connection open ...');

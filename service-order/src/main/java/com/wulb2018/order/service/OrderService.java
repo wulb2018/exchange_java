@@ -25,6 +25,7 @@ import com.wulb2018.order.model.vo.OrderVO;
 import com.wulb2018.order.service.convert.OrderConvert;
 import com.wulb2018.order.service.convert.OrderFeignConvert;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -39,6 +40,7 @@ import java.util.Map;
  * @author makejava
  * @since 2026-01-12 22:30:54
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderService extends BaseService<OrderMapper, Order> {
@@ -62,13 +64,15 @@ public class OrderService extends BaseService<OrderMapper, Order> {
         accountCommonDTO.setPrice(orderAddDTO.getPrice());
         accountCommonDTO.setQuantity(orderAddDTO.getQuantity());
         accountCommonDTO.setSymbolId(orderAddDTO.getSymbolId());
-        accountCommonDTO.setSide(orderAddDTO.getSide().getCode());
+        accountCommonDTO.setSide(orderAddDTO.getSide());
+
         TradeSymbol symbol = tradeSymbolService.getById(accountCommonDTO.getSymbolId());
         if (symbol == null) {
             return false;
         }
         ApiResponse<Boolean> response = accountFeignClient.frozenAsset(accountCommonDTO);
         if (!response.getData()) {
+            log.info("可用余额不足以冻结");
             return false;
         }
         Order entity = orderConvert.toEntity(orderAddDTO);

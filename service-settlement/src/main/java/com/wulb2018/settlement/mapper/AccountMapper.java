@@ -13,5 +13,15 @@ import java.time.LocalDateTime;
  */
 public interface AccountMapper extends BaseMapper<Account> {
     int frozenAsset(Double frozen, LocalDateTime modifyDate, Long userId, String asset);
+
+    int unfrozenAsset(Double amount, LocalDateTime modifyDate, Long userId, String asset);
+
+    int settlementBuyQuoteAssetAccount(Double maxFrozen, Double account, Double fee, LocalDateTime modifyDate, Long userId, String asset);
+
+    int settlementBuyBaseAssetAccount(Double account, LocalDateTime modifyDate, Long userId, String asset);
+
+    int settlementSellBaseAssetAccount(Double account, LocalDateTime modifyDate, Long userId, String asset);
+
+    int settlementSellQuoteAssetAccount(Double account, Double fee,LocalDateTime modifyDate, Long userId, String asset);
 }
 

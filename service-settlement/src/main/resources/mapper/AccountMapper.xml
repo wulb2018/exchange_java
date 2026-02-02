@@ -2,6 +2,28 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wulb2018.settlement.mapper.AccountMapper">
     <update id="frozenAsset" >
-        UPDATE `t_account` SET available = available - #{frozen}, frozen = frozen + #{frozen},modify_date=#{modifyDate} WHERE user_id=#{userId}  AND asset = #{asset};
+        UPDATE `t_account` SET available = available - #{frozen}, frozen = frozen + #{frozen},modify_date=#{modifyDate} WHERE user_id=#{userId}  AND asset = #{asset} AND available >= #{frozen};
     </update>
+
+    <update id="unfrozenAsset" >
+        UPDATE `t_account` SET frozen = frozen - #{amount}, available = available + #{amount},modify_date=#{modifyDate} WHERE user_id=#{userId}  AND asset = #{asset} AND frozen >= #{amount};
+    </update>
+    <!--    结算买方计价资产（USDT）资金-->
+    <update id="settlementBuyQuoteAssetAccount" >
+        UPDATE `t_account` SET frozen = frozen - #{maxFrozen}, available = available + #{maxFrozen} - #{account} - #{fee},modify_date=#{modifyDate} WHERE user_id=#{userId}  AND asset = #{asset} RETURNING available;
+    </update>
+    <!--    结算买方基础资产（BTC）资金-->
+    <update id="settlementBuyBaseAssetAccount" >
+        UPDATE `t_account` SET available = available + #{account}, modify_date=#{modifyDate} WHERE user_id=#{userId}  AND asset = #{asset} RETURNING available;
+    </update>
+
+    <!--    结算卖方基础资产（BTC）资金-->
+    <update id="settlementSellBaseAssetAccount" >
+        UPDATE `t_account` SET available = available - #{account}, modify_date=#{modifyDate} WHERE user_id=#{userId}  AND asset = #{asset} RETURNING available;
+    </update>
+    <!--    结算卖方计价资产（USDT）资金-->
+    <update id="settlementSellQuoteAssetAccount" >
+        UPDATE `t_account` SET available = available + #{account} - #{fee},modify_date=#{modifyDate} WHERE user_id=#{userId}  AND asset = #{asset} RETURNING available;
+    </update>
+
 </mapper>

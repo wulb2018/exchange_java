@@ -3,9 +3,9 @@ package com.wulb2018.order.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.wulb2018.biz.enums.OrderStatus;
+import com.wulb2018.biz.model.dto.OrderBookCommonDTO;
 import com.wulb2018.biz.model.dto.OrderCommonDTO;
 import com.wulb2018.biz.model.dto.OrderUpdateDTO;
-import com.wulb2018.biz.model.dto.OrderBookCommonDTO;
 import com.wulb2018.common.controller.BaseRestController;
 import com.wulb2018.common.model.ApiResponse;
 import com.wulb2018.order.model.dto.OrderAddDTO;
@@ -50,11 +50,6 @@ public class OrderController extends BaseRestController {
     @ApiOperation("添加委托订单表")
     @RequestMapping("add")
     public ApiResponse<Boolean> add(@Valid @RequestBody OrderAddDTO orderAddDTO) {
-//        if (OrderSide.SELL.equals(orderAddDTO.getSide())) {
-//            orderAddDTO.setUserId(1L);
-//        } else {
-//            orderAddDTO.setUserId(2L);
-//        }
         orderAddDTO.setFilledQuantity(0.);
         orderAddDTO.setFrozenAmount(0.);
         orderAddDTO.setStatus(OrderStatus.NEW);

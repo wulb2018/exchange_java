@@ -30,4 +30,6 @@ public class TradeFeign {
     private Integer quantity;
     @ApiModelProperty("成交金额")
     private Integer amount;
+    @ApiModelProperty("maker方向，是买方还是卖方")
+    private Integer makerSide;
 }

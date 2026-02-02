@@ -1,10 +1,10 @@
 package com.wulb2018.engine.service;
 
 
-import com.wulb2018.biz.enums.OrderSide;
-import com.wulb2018.biz.model.dto.TradeCommonDTO;
 import com.wulb2018.biz.convert.TradeFeignConvert;
+import com.wulb2018.biz.enums.OrderSide;
 import com.wulb2018.biz.model.dto.OrderCommonDTO;
+import com.wulb2018.biz.model.dto.TradeCommonDTO;
 import com.wulb2018.biz.model.dto.TradeFeign;
 import com.wulb2018.client.order.OrderFeignClient;
 import com.wulb2018.client.settlement.TradeFeignClient;
@@ -16,7 +16,6 @@ import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -40,7 +39,7 @@ public class SimpleMatchingService {
     //买方需要先拿到最大的所以是拿最后一个
     private final static TreeMap<Integer, TreeMap<Long, OrderDTO>> PRICE_AND_ORDER_ID_AND_BUY_ORDER_SORTED_MAP = new TreeMap<>();
 
-    private final static List<TradeCommonDTO> TRADE_DTO_LIST = new ArrayList<>();
+    //private final static List<TradeCommonDTO> TRADE_DTO_LIST = new ArrayList<>();
 
     private volatile boolean isLoadInit = false;
 
@@ -219,6 +218,7 @@ public class SimpleMatchingService {
             tradeCommonDTO.setQuantity(earliestSellOrderDTO.getQuantity());
         }
         tradeCommonDTO.setAmount(tradeCommonDTO.getPrice() * tradeCommonDTO.getQuantity());
+        tradeCommonDTO.setMakerSide(getMakerSide(earliestSellOrderDTO.getId(), earliestBuyOrderDTO.getId()));
         return tradeCommonDTO;
     }
 
@@ -234,8 +234,15 @@ public class SimpleMatchingService {
         }
     }
 
+    private OrderSide getMakerSide(Long earliestSellOrderId, Long earliestBuyOrderId) {
+        if (earliestSellOrderId < earliestBuyOrderId) {
+            return OrderSide.SELL;
+        } else {
+            return OrderSide.BUY;
+        }
+    }
+
     private void settlementTrade(TradeCommonDTO tradeCommonDTO) {
-        TRADE_DTO_LIST.add(tradeCommonDTO);
         TradeFeign tradeFeign = tradeFeignConvert.toTradeFeign(tradeCommonDTO);
         tradeFeignClient.settlementTrade(tradeFeign);
     }
@@ -279,11 +286,11 @@ public class SimpleMatchingService {
         thread.start();
     }
 
-    public void testPrintTradeList() {
-        System.out.println(TRADE_DTO_LIST);
-    }
-
-    public String getTradeListString() {
-        return TRADE_DTO_LIST.toString();
-    }
+//    public void testPrintTradeList() {
+//        System.out.println(TRADE_DTO_LIST);
+//    }
+//
+//    public String getTradeListString() {
+//        return TRADE_DTO_LIST.toString();
+//    }
 }

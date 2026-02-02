@@ -26,4 +26,7 @@ mybatis-plus:
   configuration:
     default-enum-type-handler: com.wulb2018.common.handler.BaseEnumTypeHandler
 
-
+logging:
+  level:
+    com.wulb2018.order: INFO
+    reactor.netty.http.client: DEBUG
