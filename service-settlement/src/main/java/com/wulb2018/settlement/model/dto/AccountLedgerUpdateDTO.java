@@ -1,7 +1,6 @@
 package com.wulb2018.settlement.model.dto;
 
-import java.time.LocalDateTime;
-
+import com.wulb2018.settlement.enums.AccountLedgerBizType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -26,7 +25,7 @@ public class AccountLedgerUpdateDTO {
     private Long accountId;
 
     @ApiModelProperty("业务类型（TRADE、FEE 等）")
-    private String bizType;
+    private AccountLedgerBizType bizType;
 
     @ApiModelProperty("业务ID（trade_id）")
     private Long bizId;

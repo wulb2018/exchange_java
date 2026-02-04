@@ -22,7 +22,10 @@ spring:
         register-enabled: true
         service: ${spring.application.name}
         group: my-cloud
-
+mybatis-plus:
+  configuration:
+    #如果不加这个就不会获取枚举的code
+    default-enum-type-handler: com.wulb2018.common.handler.BaseEnumTypeHandler
 
 #logging:
 #  level:

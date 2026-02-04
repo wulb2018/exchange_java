@@ -51,6 +51,9 @@ public class TradeService extends BaseService<TradeMapper, Trade> {
     public void settlementTrade(TradeDTO tradeDTO){
         //保存交易记录
         Trade trade = tradeConvert.toEntity(tradeDTO);
+        //Trade trade = BeanUtil.copyProperties(tradeDTO, Trade.class);
+        //trade.setMakerSide(tradeDTO.getMakerSide().getCode());
+        //todo 这边会把OrderSide makerSide 在数据保存为字符串，，这里正常情况下应该int型，有空这里要研究研究
         save(trade);
         //缓存维护 最后几个蜡烛图
         candlestickService.safeguardCandlestickCompleteness(trade);

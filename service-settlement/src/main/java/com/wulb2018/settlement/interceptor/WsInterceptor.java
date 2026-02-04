@@ -1,6 +1,7 @@
 package com.wulb2018.settlement.interceptor;
 
 import com.wulb2018.biz.enums.CandlestickType;
+import com.wulb2018.common.model.BaseEnum;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.stereotype.Component;
@@ -30,7 +31,7 @@ public class WsInterceptor implements HandshakeInterceptor {
 
         String candlestickType = params.get("candlestickType");
         // 存到 session attributes
-        attributes.put("candlestickType", CandlestickType.fromCode(candlestickType));
+        attributes.put("candlestickType", BaseEnum.getByCode(CandlestickType.class, candlestickType));
         return true;
     }
 

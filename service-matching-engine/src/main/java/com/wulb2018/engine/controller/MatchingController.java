@@ -28,7 +28,7 @@ public class MatchingController extends BaseRestController {
         OrderDTO orderDTO = orderFeignConvert.toOrderDTO(orderCommonDTO);
         simpleMatchingService.addOrder(orderDTO);
         //simpleMatchingService.testPrintTradeList();
-        return ApiResponse.success(simpleMatchingService.getTradeListString());
+        return ApiResponse.success();
     }
     @PostMapping("/init")
     public ApiResponse<Boolean> init() {

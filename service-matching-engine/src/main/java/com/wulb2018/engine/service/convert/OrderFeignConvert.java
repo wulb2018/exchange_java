@@ -1,9 +1,7 @@
 package com.wulb2018.engine.service.convert;
 
 
-import com.wulb2018.biz.enums.OrderSide;
 import com.wulb2018.biz.model.dto.OrderCommonDTO;
-
 import com.wulb2018.engine.model.dto.OrderDTO;
 import org.mapstruct.Mapper;
 
@@ -22,9 +20,9 @@ public interface OrderFeignConvert {
      * @param side
      * @return
      */
-    default OrderSide map(Integer side) {
-        return OrderSide.fromCode(side);
-    }
+//    default OrderSide map(Integer side) {
+//        return BaseEnum.getByCode(OrderSide.class, side);
+//    }
 
     OrderDTO toOrderDTO(OrderCommonDTO orderCommonDTO);
 

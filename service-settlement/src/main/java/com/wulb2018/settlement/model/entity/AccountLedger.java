@@ -1,8 +1,7 @@
 package com.wulb2018.settlement.model.entity;
 
-import java.time.LocalDateTime;
-
 import com.wulb2018.common.model.BaseEntity;
+import com.wulb2018.settlement.enums.AccountLedgerBizType;
 import lombok.Data;
 import lombok.ToString;
 import lombok.EqualsAndHashCode;
@@ -28,7 +27,7 @@ public class AccountLedger extends BaseEntity<AccountLedger> {
     /**
      * 业务类型（TRADE、FEE 等）
      */
-    private String bizType;
+    private AccountLedgerBizType bizType;
 
     /**
      * 业务ID（trade_id）

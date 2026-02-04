@@ -34,12 +34,4 @@ public enum CandlestickType implements BaseEnum<String> {
         this.candlestickTypeProcess.setFormatter(dateTimeFormatter);
     }
 
-    public static CandlestickType fromCode(String code) {
-        for (CandlestickType candlestickType: values()) {
-            if(candlestickType.getCode().equals(code)) {
-                return candlestickType;
-            }
-        }
-        return SECOND5;
-    }
 }

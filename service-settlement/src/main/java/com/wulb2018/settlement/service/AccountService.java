@@ -39,6 +39,7 @@ public class AccountService extends BaseService<AccountMapper, Account> {
     private final TradeSymbolService tradeSymbolService;
     private final AccountFrozenLogService accountFrozenLogService;
     private final FeeRecordService feeRecordService;
+    private final AccountLedgerService accountLedgerService;
 
     /**
      * 冻结资产
@@ -53,13 +54,13 @@ public class AccountService extends BaseService<AccountMapper, Account> {
             return false;
         }
         //todo 要做最终一致性
-        String baseAsset;
-        if (OrderSide.BUY.getCode().equals(accountCommonDTO.getSide())) {
+        String asset;
+        if (OrderSide.BUY.equals(accountCommonDTO.getSide())) {
             //买方冻结计价资产
-            baseAsset = tradeSymbol.getQuoteAsset();
+            asset = tradeSymbol.getQuoteAsset();
         } else {
             //卖方冻结基础资产
-            baseAsset = tradeSymbol.getBaseAsset();
+            asset = tradeSymbol.getBaseAsset();
         }
 
         FeeRule feeRule = feeRuleService.getOneBySymbolId(accountCommonDTO.getSymbolId());
@@ -70,7 +71,7 @@ public class AccountService extends BaseService<AccountMapper, Account> {
         Double frozen = calculateMaxFrozen(accountCommonDTO.getPrice(), accountCommonDTO.getQuantity(), feeRule, accountCommonDTO.getSide());
 
         int updateNum = getBaseMapper()
-                .frozenAsset(frozen, LocalDateTime.now(), accountCommonDTO.getUserId(), baseAsset);
+                .frozenAsset(frozen, LocalDateTime.now(), accountCommonDTO.getUserId(), asset);
 
         return updateNum > 0;
     }
@@ -118,33 +119,55 @@ public class AccountService extends BaseService<AccountMapper, Account> {
         BigDecimal maxFrozenBigDecimal = BigDecimal.valueOf(calculateMaxFrozen(trade.getPrice(), trade.getQuantity(), feeRule, OrderSide.BUY));
         RoleType buyRole = trade.getBuyOrderId() < trade.getSellOrderId() ? RoleType.MAKER : RoleType.TAKER;
         double buyFee = calculateFee(trade.getPrice(), trade.getQuantity(), feeRule, buyRole);
-        //更新 （计价资产）U 账户资金
+        //更新买方 （计价资产）U 账户资金
         int buyUpdateQuoteAssetAccountNum = getBaseMapper().settlementBuyQuoteAssetAccount(maxFrozenBigDecimal.doubleValue(), trade.getAmount(), buyFee, settlementTime, trade.getBuyUserId(), tradeSymbol.getQuoteAsset());
         BizAssert.isTrue(buyUpdateQuoteAssetAccountNum > 0, "买方更新计价资产账户失败");
-        //更新 基础资产（BTC）账户资金
+        //查询买方 （计价资产）U 账户资金最新的变动后余额
+        Account buyQuoteAssetAccount = lambdaQuery().eq(Account::getUserId, trade.getBuyUserId()).eq(Account::getAsset, tradeSymbol.getQuoteAsset()).last("LIMIT 1").one();
+        double buyQuoteChangeAmount = BigDecimal.valueOf(buyFee).add(BigDecimal.valueOf(trade.getAmount())).doubleValue();
+        //保存买方 （计价资产）U 账户资金 变动流水记录
+        accountLedgerService.saveTradeBizTypeLedger(buyQuoteAssetAccount, trade.getId(), -buyQuoteChangeAmount);
+        //更新买方 基础资产（BTC）账户资金
         int buyUpdateBaseAssetAccountNum = getBaseMapper().settlementBuyBaseAssetAccount(trade.getQuantity(), settlementTime, trade.getBuyUserId(), tradeSymbol.getBaseAsset());
         BizAssert.isTrue(buyUpdateBaseAssetAccountNum > 0, "买方更新基础资产账户失败");
-        //记录买手续费
+        Account buyBaseAssetAccount = lambdaQuery().eq(Account::getUserId, trade.getBuyUserId()).eq(Account::getAsset, tradeSymbol.getBaseAsset()).last("LIMIT 1").one();
+        //保存买方 基础资产（BTC）账户资金 变动流水记录
+        accountLedgerService.saveTradeBizTypeLedger(buyBaseAssetAccount, trade.getId(), trade.getQuantity());
+        //记录买方手续费
         FeeRecordAddDTO buyFeeRecordAddDTO = new FeeRecordAddDTO();
         buyFeeRecordAddDTO.setUserId(trade.getBuyUserId());
         buyFeeRecordAddDTO.setTradeId(trade.getId());
         buyFeeRecordAddDTO.setAsset(tradeSymbol.getQuoteAsset());
         buyFeeRecordAddDTO.setAmount(buyFee);
+        buyFeeRecordAddDTO.setRole(trade.getBuyUserId() < trade.getSellUserId() ? RoleType.MAKER : RoleType.TAKER);
         boolean buyFeeRet = feeRecordService.save(buyFeeRecordAddDTO);
         BizAssert.isTrue(buyFeeRet, "买方记录手续费失败");
         //处理卖方
         RoleType sellRole = trade.getBuyOrderId() > trade.getSellOrderId() ? RoleType.MAKER : RoleType.TAKER;
+        //更新 卖方 基础资产（BTC）账户资金
         int sellUpdateBaseAssetAccountNum = getBaseMapper().settlementSellBaseAssetAccount(trade.getQuantity(), settlementTime, trade.getBuyUserId(), tradeSymbol.getBaseAsset());
         BizAssert.isTrue(sellUpdateBaseAssetAccountNum > 0, "卖方更新基础资产账户失败");
+        //查询 卖方 基础资产（BTC）账户资金 最新的变动后余额
+        Account sellBaseAssetAccount = lambdaQuery().eq(Account::getUserId, trade.getSellUserId()).eq(Account::getAsset, tradeSymbol.getBaseAsset()).last("LIMIT 1").one();
+        //保存卖方 基础资产（BTC）账户资金 变动流水记录
+        accountLedgerService.saveTradeBizTypeLedger(sellBaseAssetAccount, trade.getId(), -trade.getQuantity());
+
         double sellFee = calculateFee(trade.getPrice(), trade.getQuantity(), feeRule, sellRole);
-        int sellUpdateQuoteAssetAccountNum = getBaseMapper().settlementSellQuoteAssetAccount(trade.getAmount(), sellFee, settlementTime, trade.getBuyUserId(), tradeSymbol.getBaseAsset());
+        //更新 卖方 （计价资产）U 账户资金
+        int sellUpdateQuoteAssetAccountNum = getBaseMapper().settlementSellQuoteAssetAccount(trade.getAmount(), sellFee, settlementTime, trade.getBuyUserId(), tradeSymbol.getQuoteAsset());
         BizAssert.isTrue(sellUpdateQuoteAssetAccountNum > 0, "卖方更新计价资产账户失败");
+        //查询 卖方 （计价资产）U账户资金 最新的变动后余额
+        Account sellQuoteAssetAccount = lambdaQuery().eq(Account::getUserId, trade.getSellUserId()).eq(Account::getAsset, tradeSymbol.getQuoteAsset()).last("LIMIT 1").one();
+        //保存卖方 （计价资产）U账户资金 变动流水记录
+        Double sellQuoteChangeAmount = BigDecimal.valueOf(trade.getAmount()).subtract(BigDecimal.valueOf(sellFee)).doubleValue();
+        accountLedgerService.saveTradeBizTypeLedger(sellQuoteAssetAccount, trade.getId(), sellQuoteChangeAmount);
         //记录买手续费
         FeeRecordAddDTO sellFeeRecordAddDTO = new FeeRecordAddDTO();
         sellFeeRecordAddDTO.setUserId(trade.getSellUserId());
         sellFeeRecordAddDTO.setTradeId(trade.getId());
         sellFeeRecordAddDTO.setAsset(tradeSymbol.getQuoteAsset());
         sellFeeRecordAddDTO.setAmount(sellFee);
+        sellFeeRecordAddDTO.setRole(trade.getBuyUserId() > trade.getSellUserId() ? RoleType.MAKER : RoleType.TAKER);
         boolean sellFeeRet = feeRecordService.save(sellFeeRecordAddDTO);
         BizAssert.isTrue(sellFeeRet, "卖方记录手续费失败");
         return true;

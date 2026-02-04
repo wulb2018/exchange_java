@@ -56,7 +56,7 @@ public class AppTest
         buyOrderDTO1.setSymbolId(1L);
         simpleMatchingService.addOrder(buyOrderDTO1);
 
-        simpleMatchingService.testPrintTradeList();
+        //simpleMatchingService.testPrintTradeList();
     }
     @Test
     public void testScanner(){
@@ -74,7 +74,7 @@ public class AppTest
         OrderCommonDTO orderCommonDTO = new OrderCommonDTO();
         orderCommonDTO.setId(1L);
         orderCommonDTO.setQuantity(1);
-        orderCommonDTO.setSide(1);
+        //orderCommonDTO.setSide(1);
 
         OrderDTO orderDTO = orderFeignConvert.toOrderDTO(orderCommonDTO);
         System.out.println(orderDTO);

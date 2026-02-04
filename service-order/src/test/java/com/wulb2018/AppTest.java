@@ -104,6 +104,33 @@ public class AppTest
         System.out.println("循环结束，开始释放资源...");
     }
 
+    @Test
+    public void testOne() {
+        OrderAddDTO buyOrderAddDTO = new OrderAddDTO();
+        buyOrderAddDTO.setUserId(1L);
+        buyOrderAddDTO.setSymbolId(1L);
+        buyOrderAddDTO.setSide(OrderSide.BUY);
+        buyOrderAddDTO.setType(1);
+        buyOrderAddDTO.setPrice(100.);
+        buyOrderAddDTO.setQuantity(1.);
+        buyOrderAddDTO.setStatus(OrderStatus.NEW);
+        buyOrderAddDTO.setFrozenAmount(0.);
+        buyOrderAddDTO.setFilledQuantity(0.);
+        orderService.save(buyOrderAddDTO);
+
+        OrderAddDTO sellOrderAddDTO = new OrderAddDTO();
+        sellOrderAddDTO.setUserId(2L);
+        sellOrderAddDTO.setSymbolId(1L);
+        sellOrderAddDTO.setSide(OrderSide.SELL);
+        sellOrderAddDTO.setType(1);
+        sellOrderAddDTO.setPrice(80.);
+        sellOrderAddDTO.setQuantity(1.);
+        sellOrderAddDTO.setStatus(OrderStatus.NEW);
+        sellOrderAddDTO.setFrozenAmount(0.);
+        sellOrderAddDTO.setFilledQuantity(0.);
+        orderService.save(sellOrderAddDTO);
+    }
+
     private Long getUserId() {
         Random random = new Random();
         int min = 1;
@@ -139,8 +166,8 @@ public class AppTest
 
     private Double getQuantity() {
         Random random = new Random();
-        int min = 100;
-        int max = 100000;
+        int min = 10;
+        int max = 100;
         int intValue = min + random.nextInt(max - min + 1);
         return intValue * 1.0 / 100;
     }

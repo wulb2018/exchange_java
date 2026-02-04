@@ -1,5 +1,6 @@
 package com.wulb2018.biz.model.dto;
 
+import com.wulb2018.biz.enums.OrderSide;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -31,5 +32,5 @@ public class TradeFeign {
     @ApiModelProperty("成交金额")
     private Integer amount;
     @ApiModelProperty("maker方向，是买方还是卖方")
-    private Integer makerSide;
+    private OrderSide makerSide;
 }
