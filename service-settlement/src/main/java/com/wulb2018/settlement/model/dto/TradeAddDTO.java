@@ -1,7 +1,5 @@
 package com.wulb2018.settlement.model.dto;
 
-import java.time.LocalDateTime;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -39,7 +37,7 @@ public class TradeAddDTO {
     private Double price;
 
     @ApiModelProperty("成交数量")
-    private Double quantity;
+    private Integer quantity;
 
     @ApiModelProperty("成交额")
     private Double amount;

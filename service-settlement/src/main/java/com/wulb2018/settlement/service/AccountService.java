@@ -128,11 +128,11 @@ public class AccountService extends BaseService<AccountMapper, Account> {
         //保存买方 （计价资产）U 账户资金 变动流水记录
         accountLedgerService.saveTradeBizTypeLedger(buyQuoteAssetAccount, trade.getId(), -buyQuoteChangeAmount);
         //更新买方 基础资产（BTC）账户资金
-        int buyUpdateBaseAssetAccountNum = getBaseMapper().settlementBuyBaseAssetAccount(trade.getQuantity(), settlementTime, trade.getBuyUserId(), tradeSymbol.getBaseAsset());
+        int buyUpdateBaseAssetAccountNum = getBaseMapper().settlementBuyBaseAssetAccount((double)trade.getQuantity(), settlementTime, trade.getBuyUserId(), tradeSymbol.getBaseAsset());
         BizAssert.isTrue(buyUpdateBaseAssetAccountNum > 0, "买方更新基础资产账户失败");
         Account buyBaseAssetAccount = lambdaQuery().eq(Account::getUserId, trade.getBuyUserId()).eq(Account::getAsset, tradeSymbol.getBaseAsset()).last("LIMIT 1").one();
         //保存买方 基础资产（BTC）账户资金 变动流水记录
-        accountLedgerService.saveTradeBizTypeLedger(buyBaseAssetAccount, trade.getId(), trade.getQuantity());
+        accountLedgerService.saveTradeBizTypeLedger(buyBaseAssetAccount, trade.getId(), (double)trade.getQuantity());
         //记录买方手续费
         FeeRecordAddDTO buyFeeRecordAddDTO = new FeeRecordAddDTO();
         buyFeeRecordAddDTO.setUserId(trade.getBuyUserId());
@@ -145,12 +145,12 @@ public class AccountService extends BaseService<AccountMapper, Account> {
         //处理卖方
         RoleType sellRole = trade.getBuyOrderId() > trade.getSellOrderId() ? RoleType.MAKER : RoleType.TAKER;
         //更新 卖方 基础资产（BTC）账户资金
-        int sellUpdateBaseAssetAccountNum = getBaseMapper().settlementSellBaseAssetAccount(trade.getQuantity(), settlementTime, trade.getBuyUserId(), tradeSymbol.getBaseAsset());
+        int sellUpdateBaseAssetAccountNum = getBaseMapper().settlementSellBaseAssetAccount((double)trade.getQuantity(), settlementTime, trade.getBuyUserId(), tradeSymbol.getBaseAsset());
         BizAssert.isTrue(sellUpdateBaseAssetAccountNum > 0, "卖方更新基础资产账户失败");
         //查询 卖方 基础资产（BTC）账户资金 最新的变动后余额
         Account sellBaseAssetAccount = lambdaQuery().eq(Account::getUserId, trade.getSellUserId()).eq(Account::getAsset, tradeSymbol.getBaseAsset()).last("LIMIT 1").one();
         //保存卖方 基础资产（BTC）账户资金 变动流水记录
-        accountLedgerService.saveTradeBizTypeLedger(sellBaseAssetAccount, trade.getId(), -trade.getQuantity());
+        accountLedgerService.saveTradeBizTypeLedger(sellBaseAssetAccount, trade.getId(), -(double)trade.getQuantity());
 
         double sellFee = calculateFee(trade.getPrice(), trade.getQuantity(), feeRule, sellRole);
         //更新 卖方 （计价资产）U 账户资金

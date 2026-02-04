@@ -58,8 +58,7 @@ public class TradeController extends BaseRestController {
         TradeDTO tradeDTO = new TradeDTO();
         BeanUtil.copyProperties(tradeCommonDTO, tradeDTO);
         tradeDTO.setPrice(DataPrecisionConvert.intToDecimal(tradeCommonDTO.getPrice(), tradeSymbol.getPricePrecision()));
-        tradeDTO.setQuantity(DataPrecisionConvert.intToDecimal(tradeCommonDTO.getQuantity(), tradeSymbol.getQuantityPrecision()));
-        tradeDTO.setAmount(DataPrecisionConvert.intToDecimal(tradeCommonDTO.getAmount(), tradeSymbol.getPricePrecision() + tradeSymbol.getQuantityPrecision()));
+        tradeDTO.setAmount(DataPrecisionConvert.intToDecimal(tradeCommonDTO.getAmount(), tradeSymbol.getPricePrecision()));
         return tradeDTO;
     }
 

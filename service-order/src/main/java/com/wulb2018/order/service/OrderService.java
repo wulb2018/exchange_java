@@ -80,7 +80,6 @@ public class OrderService extends BaseService<OrderMapper, Order> {
         OrderCommonDTO orderCommonDTO = orderFeignConvert.toOrderFeign(entity);
         //做价格精度转换
         orderCommonDTO.setPrice(DataPrecisionConvert.decimalToInt(entity.getPrice(), symbol.getPricePrecision()));
-        orderCommonDTO.setQuantity(DataPrecisionConvert.decimalToInt(entity.getQuantity(), symbol.getQuantityPrecision()));
         matchingFeignClient.addOrder(orderCommonDTO);
         return ret;
         //todo 有空统一改一下索引名称

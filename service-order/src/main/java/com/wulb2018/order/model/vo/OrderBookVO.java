@@ -22,7 +22,7 @@ public class OrderBookVO {
     @ApiModelProperty("订单总额度")
     private Double amount;
     @ApiModelProperty("累计交易量")
-    private Double cumulativeQuantity;
+    private Integer cumulativeQuantity;
     @ApiModelProperty("方向")
     private OrderSide side;
 }

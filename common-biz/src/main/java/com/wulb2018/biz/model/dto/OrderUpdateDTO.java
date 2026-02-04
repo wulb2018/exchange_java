@@ -41,7 +41,7 @@ public class OrderUpdateDTO {
     private Double quantity;
 
     @ApiModelProperty("已成交数量")
-    private Double filledQuantity;
+    private Integer filledQuantity;
 
     @ApiModelProperty("冻结资金/资产")
     private Double frozenAmount;

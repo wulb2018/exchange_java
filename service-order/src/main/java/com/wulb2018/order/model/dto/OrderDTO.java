@@ -36,10 +36,10 @@ public class OrderDTO {
     private Double price;
 
     @ApiModelProperty("委托数量")
-    private Double quantity;
+    private Integer quantity;
 
     @ApiModelProperty("已成交数量")
-    private Double filledQuantity;
+    private Integer filledQuantity;
 
     @ApiModelProperty("冻结资金/资产")
     private Double frozenAmount;

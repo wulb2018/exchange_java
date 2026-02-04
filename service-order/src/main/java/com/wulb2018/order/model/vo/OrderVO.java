@@ -1,7 +1,5 @@
 package com.wulb2018.order.model.vo;
 
-import java.time.LocalDateTime;
-
 import com.wulb2018.biz.enums.OrderSide;
 import com.wulb2018.biz.enums.OrderStatus;
 import com.wulb2018.common.model.BaseVO;
@@ -10,6 +8,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+
+import java.time.LocalDateTime;
 
 /**
  * 委托订单表(t_order)-展现层实体类
@@ -39,10 +39,10 @@ public class OrderVO extends BaseVO<OrderVO> {
     private Double price;
 
     @ApiModelProperty("委托数量")
-    private Double quantity;
+    private Integer quantity;
 
     @ApiModelProperty("已成交数量")
-    private Double filledQuantity;
+    private Integer filledQuantity;
 
     @ApiModelProperty("冻结资金/资产")
     private Double frozenAmount;

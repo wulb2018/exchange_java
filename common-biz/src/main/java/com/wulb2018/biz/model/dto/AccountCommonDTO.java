@@ -25,7 +25,7 @@ public class AccountCommonDTO {
     private Double price;
 
     @ApiModelProperty("委托数量")
-    private Double quantity;
+    private Integer quantity;
     @ApiModelProperty("交易对ID")
     private Long symbolId;
     @ApiModelProperty("方向：1=买，2=卖")

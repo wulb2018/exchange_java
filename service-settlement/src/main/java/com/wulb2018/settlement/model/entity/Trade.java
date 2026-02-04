@@ -52,7 +52,7 @@ public class Trade extends BaseEntity<Trade> {
     /**
      * 成交数量
      */
-    private Double quantity;
+    private Integer quantity;
 
     /**
      * 成交额

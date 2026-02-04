@@ -50,7 +50,7 @@ public class OrderController extends BaseRestController {
     @ApiOperation("添加委托订单表")
     @RequestMapping("add")
     public ApiResponse<Boolean> add(@Valid @RequestBody OrderAddDTO orderAddDTO) {
-        orderAddDTO.setFilledQuantity(0.);
+        orderAddDTO.setFilledQuantity(0);
         orderAddDTO.setFrozenAmount(0.);
         orderAddDTO.setStatus(OrderStatus.NEW);
         return ApiResponse.success(orderService.save(orderAddDTO));

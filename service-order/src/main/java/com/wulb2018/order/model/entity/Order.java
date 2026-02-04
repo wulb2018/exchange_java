@@ -49,12 +49,12 @@ public class Order extends BaseEntity<Order> {
     /**
      * 委托数量
      */
-    private Double quantity;
+    private Integer quantity;
 
     /**
      * 已成交数量
      */
-    private Double filledQuantity;
+    private Integer filledQuantity;
 
     /**
      * 冻结资金/资产

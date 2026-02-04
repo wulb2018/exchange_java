@@ -1,7 +1,5 @@
 package com.wulb2018.settlement.model.vo;
 
-import java.time.LocalDateTime;
-
 import com.wulb2018.common.model.BaseVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -40,7 +38,7 @@ public class TradeVO extends BaseVO<TradeVO> {
     private Double price;
 
     @ApiModelProperty("成交数量")
-    private Double quantity;
+    private Integer quantity;
 
     @ApiModelProperty("成交额")
     private Double amount;

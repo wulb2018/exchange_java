@@ -3,17 +3,12 @@ package com.wulb2018.settlement.service.convert;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wulb2018.biz.model.dto.TradeCommonDTO;
-import com.wulb2018.biz.model.entity.TradeSymbol;
-import com.wulb2018.biz.service.TradeSymbolService;
-import com.wulb2018.biz.util.DataPrecisionConvert;
 import com.wulb2018.settlement.model.dto.TradeAddDTO;
 import com.wulb2018.settlement.model.dto.TradeDTO;
 import com.wulb2018.settlement.model.dto.TradeUpdateDTO;
 import com.wulb2018.settlement.model.entity.Trade;
 import com.wulb2018.settlement.model.vo.TradeVO;
-import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
@@ -40,15 +35,15 @@ public interface TradeConvert {
 
     Trade toEntity(TradeUpdateDTO tradeUpdateDTO);
 
-    @AfterMapping
-    default void tradeCommonDTOToEntityPrecisionConvert(TradeCommonDTO tradeCommonDTO, @MappingTarget Trade trade, TradeSymbolService tradeSymbolService) {
-        TradeSymbol tradeSymbol = tradeSymbolService.getById(tradeCommonDTO.getSymbolId());
-        if (tradeSymbol == null) {
-            return;
-        }
-        trade.setQuantity(DataPrecisionConvert.intToDecimal(tradeCommonDTO.getQuantity(), tradeSymbol.getQuantityPrecision()));
-        trade.setPrice(DataPrecisionConvert.intToDecimal(tradeCommonDTO.getPrice(), tradeSymbol.getPricePrecision()));
-        trade.setAmount(DataPrecisionConvert.intToDecimal(tradeCommonDTO.getAmount(), tradeSymbol.getPricePrecision()));
-    }
+//    @AfterMapping
+//    default void tradeCommonDTOToEntityPrecisionConvert(TradeCommonDTO tradeCommonDTO, @MappingTarget Trade trade, TradeSymbolService tradeSymbolService) {
+//        TradeSymbol tradeSymbol = tradeSymbolService.getById(tradeCommonDTO.getSymbolId());
+//        if (tradeSymbol == null) {
+//            return;
+//        }
+//        trade.setQuantity(DataPrecisionConvert.intToDecimal(tradeCommonDTO.getQuantity(), tradeSymbol.getQuantityPrecision()));
+//        trade.setPrice(DataPrecisionConvert.intToDecimal(tradeCommonDTO.getPrice(), tradeSymbol.getPricePrecision()));
+//        trade.setAmount(DataPrecisionConvert.intToDecimal(tradeCommonDTO.getAmount(), tradeSymbol.getPricePrecision()));
+//    }
 }
 

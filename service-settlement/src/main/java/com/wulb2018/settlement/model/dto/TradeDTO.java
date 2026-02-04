@@ -38,7 +38,7 @@ public class TradeDTO {
     private Double price;
 
     @ApiModelProperty("成交数量")
-    private Double quantity;
+    private Integer quantity;
 
     @ApiModelProperty("成交额")
     private Double amount;
