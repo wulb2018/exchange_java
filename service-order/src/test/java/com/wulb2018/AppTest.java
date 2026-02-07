@@ -48,10 +48,10 @@ public class AppTest
         orderAddDTO.setSide(OrderSide.SELL);
         orderAddDTO.setType(1);
         orderAddDTO.setPrice(1000.01);
-        orderAddDTO.setQuantity(2.);
+        orderAddDTO.setQuantity(2);
         orderAddDTO.setStatus(OrderStatus.NEW);
         orderAddDTO.setFrozenAmount(1001.02);
-        orderAddDTO.setFilledQuantity(0.);
+        orderAddDTO.setFilledQuantity(0);
         orderService.save(orderAddDTO);
     }
 
@@ -93,7 +93,7 @@ public class AppTest
             orderAddDTO.setQuantity(getQuantity() );
             orderAddDTO.setStatus(OrderStatus.NEW);
             orderAddDTO.setFrozenAmount(0.);
-            orderAddDTO.setFilledQuantity(0.);
+            orderAddDTO.setFilledQuantity(0);
             orderService.save(orderAddDTO);
             //break;
             if (!running.get()) {
@@ -112,10 +112,10 @@ public class AppTest
         buyOrderAddDTO.setSide(OrderSide.BUY);
         buyOrderAddDTO.setType(1);
         buyOrderAddDTO.setPrice(100.);
-        buyOrderAddDTO.setQuantity(1.);
+        buyOrderAddDTO.setQuantity(1);
         buyOrderAddDTO.setStatus(OrderStatus.NEW);
         buyOrderAddDTO.setFrozenAmount(0.);
-        buyOrderAddDTO.setFilledQuantity(0.);
+        buyOrderAddDTO.setFilledQuantity(0);
         orderService.save(buyOrderAddDTO);
 
         OrderAddDTO sellOrderAddDTO = new OrderAddDTO();
@@ -124,10 +124,10 @@ public class AppTest
         sellOrderAddDTO.setSide(OrderSide.SELL);
         sellOrderAddDTO.setType(1);
         sellOrderAddDTO.setPrice(80.);
-        sellOrderAddDTO.setQuantity(1.);
+        sellOrderAddDTO.setQuantity(1);
         sellOrderAddDTO.setStatus(OrderStatus.NEW);
         sellOrderAddDTO.setFrozenAmount(0.);
-        sellOrderAddDTO.setFilledQuantity(0.);
+        sellOrderAddDTO.setFilledQuantity(0);
         orderService.save(sellOrderAddDTO);
     }
 
@@ -164,12 +164,12 @@ public class AppTest
         return min + random.nextInt(max - min + 1);
     }
 
-    private Double getQuantity() {
+    private int getQuantity() {
         Random random = new Random();
         int min = 10;
         int max = 100;
         int intValue = min + random.nextInt(max - min + 1);
-        return intValue * 1.0 / 100;
+        return intValue;
     }
 
 }
