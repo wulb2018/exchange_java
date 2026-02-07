@@ -34,22 +34,22 @@ public class AppTest {
         accountCommonDTO.setSide(OrderSide.BUY);
         accountCommonDTO.setQuantity(1);
         //todo 需要重新设计，还不具备开发web3交易所的能力，先开发股票交易，具体看GPT提问记录
-        accountService.frozenAsset(accountCommonDTO);
+        accountService.frozenBuy(accountCommonDTO);
     }
 
     @Test
     public void testSettlementAccount() {
         Trade trade = new Trade();
         trade.setStockId(1L);
-        trade.setBuyOrderId(3L);
-        trade.setSellOrderId(4L);
+        trade.setBuyOrderId(5L);
+        trade.setSellOrderId(9L);
         trade.setBuyUserId(1L);
         trade.setSellUserId(2L);
         trade.setPrice(100.);
         trade.setQuantity(1);
         trade.setAmount(100.);
         trade.setMakerSide(OrderSide.BUY);
-        trade.setId(2L);
+        trade.setId(5L);
         trade.setCreateDate(LocalDateTime.now());
         trade.setModifyDate(LocalDateTime.now());
         accountService.settlementAccount(trade);

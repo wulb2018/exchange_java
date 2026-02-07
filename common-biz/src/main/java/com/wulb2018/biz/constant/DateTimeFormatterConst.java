@@ -10,6 +10,6 @@ import java.time.format.DateTimeFormatter;
 public interface DateTimeFormatterConst {
     DateTimeFormatter secondFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     DateTimeFormatter minuteFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-    DateTimeFormatter hourFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH");
+    DateTimeFormatter hourFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:00");
     DateTimeFormatter dayFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 }

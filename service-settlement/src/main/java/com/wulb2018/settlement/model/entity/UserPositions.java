@@ -31,11 +31,6 @@ public class UserPositions extends BaseEntity<UserPositions> {
     private Long stockId;
 
     /**
-     * 总持有数量
-     */
-    private Integer totalQuantity;
-
-    /**
      * 可用数量（未冻结）
      */
     private Integer availableQuantity;
@@ -69,16 +64,5 @@ public class UserPositions extends BaseEntity<UserPositions> {
      * 最后卖出时间
      */
     private LocalDateTime lastSellDate;
-
-    /**
-     * 创建时间
-     */
-    private LocalDateTime createDate;
-
-    /**
-     * 更新时间
-     */
-    private LocalDateTime modifyDate;
-
 }
 

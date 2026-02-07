@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 public interface UserPositionsMapper extends BaseMapper<UserPositions> {
     int settlementBuyUserPositions(Integer quantity, LocalDateTime modifyDate, Long userId, Long stockId);
 
-    int settlementSellAccount(Integer quantity, LocalDateTime modifyDate, Long userId, Long stockId);
+    int settlementSellUserPositions(Integer quantity, LocalDateTime modifyDate, Long userId, Long stockId);
+
+    int frozenSell(Integer quantity, LocalDateTime modifyDate, Long userId, Long stockId);
 }
 

@@ -16,7 +16,7 @@ public interface AccountMapper extends BaseMapper<Account> {
 
     int unfrozenAsset(Double amount, LocalDateTime modifyDate, Long userId, String asset);
 
-    int settlementBuyAccount(Double maxFrozen, Double account, LocalDateTime modifyDate, Long userId);
+    int settlementBuyAccount(Double account, LocalDateTime modifyDate, Long userId);
 
     int settlementSellAccount(Double account, LocalDateTime modifyDate, Long userId);
 }

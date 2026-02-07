@@ -1,6 +1,9 @@
 package com.wulb2018.settlement.service;
 
 
+import com.wulb2018.biz.model.dto.AccountCommonDTO;
+import com.wulb2018.biz.model.entity.Stock;
+import com.wulb2018.biz.service.StockService;
 import com.wulb2018.common.service.BaseService;
 import com.wulb2018.settlement.mapper.UserPositionsMapper;
 import com.wulb2018.settlement.model.dto.UserPositionsAddDTO;
@@ -26,6 +29,7 @@ import java.util.List;
 public class UserPositionsService extends BaseService<UserPositionsMapper, UserPositions> {
 
     private final UserPositionsConvert userPositionsConvert;
+    private final StockService stockService;
 
     public boolean initUserPositions(Long userId, Long stockId) {
         UserPositions userPositions = lambdaQuery().eq(UserPositions::getUserId, userId).last("LIMIT 1").one();
@@ -45,7 +49,16 @@ public class UserPositionsService extends BaseService<UserPositionsMapper, UserP
     }
 
     public boolean settlementSellUserPositions(Long userId, Long stockId, Integer quantity) {
-        int updateNum = getBaseMapper().settlementSellAccount(quantity, LocalDateTime.now(), userId, stockId);
+        int updateNum = getBaseMapper().settlementSellUserPositions(quantity, LocalDateTime.now(), userId, stockId);
+        return updateNum > 0;
+    }
+
+    public boolean frozenSell(AccountCommonDTO accountCommonDTO) {
+        Stock stock = stockService.getById(accountCommonDTO.getStockId());
+        if (stock == null) {
+            return false;
+        }
+        int updateNum = getBaseMapper().frozenSell(accountCommonDTO.getQuantity(), LocalDateTime.now(), accountCommonDTO.getUserId(), accountCommonDTO.getStockId());
         return updateNum > 0;
     }
 

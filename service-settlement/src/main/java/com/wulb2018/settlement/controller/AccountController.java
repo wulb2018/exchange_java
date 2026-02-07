@@ -1,14 +1,15 @@
 package com.wulb2018.settlement.controller;
 
 
+import com.wulb2018.biz.enums.OrderSide;
 import com.wulb2018.biz.model.dto.AccountCommonDTO;
 import com.wulb2018.common.controller.BaseRestController;
 import com.wulb2018.common.model.ApiResponse;
-import com.wulb2018.settlement.model.vo.AccountVO;
 import com.wulb2018.settlement.model.dto.AccountAddDTO;
 import com.wulb2018.settlement.model.dto.AccountUpdateDTO;
+import com.wulb2018.settlement.model.vo.AccountVO;
 import com.wulb2018.settlement.service.AccountService;
-import com.wulb2018.settlement.service.convert.AccountFeignConvert;
+import com.wulb2018.settlement.service.UserPositionsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -31,14 +32,18 @@ import org.springframework.web.bind.annotation.*;
 public class AccountController extends BaseRestController {
 
     private final AccountService accountService;
-    private final AccountFeignConvert accountFeignConvert;
+    private final UserPositionsService userPositionsService;
 
 
     @ApiOperation("添加账户主表")
     @PostMapping("frozen_asset")
     public ApiResponse<Boolean> frozenAsset(@Valid @RequestBody AccountCommonDTO accountCommonDTO) {
-
-        boolean ret = accountService.frozenAsset(accountCommonDTO);
+        boolean ret;
+        if (OrderSide.BUY.equals(accountCommonDTO.getSide())) {
+            ret = accountService.frozenBuy(accountCommonDTO);
+        } else {
+            ret = userPositionsService.frozenSell(accountCommonDTO);
+        }
         return ApiResponse.success(ret);
     }
 

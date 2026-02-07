@@ -26,9 +26,6 @@ public class UserPositionsDTO {
     @ApiModelProperty("股票id")
     private Long stockId;
 
-    @ApiModelProperty("总持有数量")
-    private Integer totalQuantity;
-
     @ApiModelProperty("可用数量（未冻结）")
     private Integer availableQuantity;
 
@@ -49,12 +46,6 @@ public class UserPositionsDTO {
 
     @ApiModelProperty("最后卖出时间")
     private LocalDateTime lastSellDate;
-
-    @ApiModelProperty("创建时间")
-    private LocalDateTime createDate;
-
-    @ApiModelProperty("更新时间")
-    private LocalDateTime modifyDate;
 
 }
 

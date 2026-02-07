@@ -13,7 +13,7 @@
 
     <!--    结算买方资金-->
     <update id="settlementBuyAccount" >
-        UPDATE `t_account` SET frozen = frozen - #{maxFrozen}, available = available + #{maxFrozen} - #{account},modify_date=#{modifyDate} WHERE user_id=#{userId} AND frozen >= #{maxFrozen} AND available >= #{account};
+        UPDATE `t_account` SET frozen = frozen - #{account}, available = available - #{account},modify_date=#{modifyDate} WHERE user_id=#{userId} AND available >= #{account};
     </update>
 
 
