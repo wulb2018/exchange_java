@@ -1,7 +1,6 @@
 package com.wulb2018.settlement.service;
 
 import com.wulb2018.biz.enums.OrderSide;
-import com.wulb2018.biz.enums.RoleType;
 import com.wulb2018.biz.model.dto.AccountCommonDTO;
 import com.wulb2018.biz.model.entity.TradeSymbol;
 import com.wulb2018.biz.service.TradeSymbolService;
@@ -37,7 +36,6 @@ public class AccountService extends BaseService<AccountMapper, Account> {
     private final FeeRuleService feeRuleService;
     private final TradeSymbolService tradeSymbolService;
     private final AccountFrozenLogService accountFrozenLogService;
-    private final FeeRecordService feeRecordService;
     private final AccountLedgerService accountLedgerService;
 
     /**
@@ -67,7 +65,7 @@ public class AccountService extends BaseService<AccountMapper, Account> {
             return false;
         }
 
-        Double frozen = calculateMaxFrozen(accountCommonDTO.getPrice(), accountCommonDTO.getQuantity(), feeRule, accountCommonDTO.getSide());
+        Double frozen = calculateMaxFrozen(accountCommonDTO.getPrice(), accountCommonDTO.getQuantity());
 
         int updateNum = getBaseMapper()
                 .frozenAsset(frozen, LocalDateTime.now(), accountCommonDTO.getUserId(), asset);
@@ -75,26 +73,11 @@ public class AccountService extends BaseService<AccountMapper, Account> {
         return updateNum > 0;
     }
 
-    private double calculateMaxFrozen(double price, int quantity, FeeRule feeRule, OrderSide orderSide) {
+    private double calculateMaxFrozen(double price, int quantity) {
         BigDecimal orderPriceBigDecimal = BigDecimal.valueOf(price);
         BigDecimal orderQuantityBigDecimal = BigDecimal.valueOf(quantity);
         BigDecimal frozenAmountBigDecimal = orderQuantityBigDecimal.multiply(orderPriceBigDecimal);
-
-        if (OrderSide.BUY.equals(orderSide)) {
-            double maxFeeRate = Math.max(feeRule.getMakerFeeRate(), feeRule.getTakerFeeRate());
-            //只有买方需要先冻结最大手续费
-            BigDecimal maxFeeRateBigDecimal = BigDecimal.valueOf(1 + maxFeeRate);
-            frozenAmountBigDecimal = frozenAmountBigDecimal.multiply(maxFeeRateBigDecimal);
-        }
         return frozenAmountBigDecimal.doubleValue();
-    }
-
-    private double calculateFee(double price, int quantity, FeeRule feeRule, RoleType roleType) {
-        double feeRate = RoleType.MAKER.equals(roleType) ? feeRule.getMakerFeeRate() : feeRule.getTakerFeeRate();
-        BigDecimal feeRateBigDecimal= BigDecimal.valueOf(feeRate);
-        BigDecimal priceBigDecimal = BigDecimal.valueOf(price);
-        BigDecimal quantityDecimal = BigDecimal.valueOf(quantity);
-        return priceBigDecimal.multiply(quantityDecimal).multiply(feeRateBigDecimal).doubleValue();
     }
 
     /**
@@ -105,49 +88,37 @@ public class AccountService extends BaseService<AccountMapper, Account> {
      */
     @Transactional
     public boolean settlementAccount(Trade trade) {
-
         TradeSymbol tradeSymbol = tradeSymbolService.getById(trade.getSymbolId());
         if (tradeSymbol == null) {
             return false;
         }
-        FeeRule feeRule = feeRuleService.getOneBySymbolId(trade.getSymbolId());
-        if (feeRule == null) {
-            return false;
-        }
         LocalDateTime settlementTime = LocalDateTime.now();
         //处理买方
-        settlementBuyAccount(trade, tradeSymbol, feeRule, settlementTime);
+        settlementBuyAccount(trade, tradeSymbol, settlementTime);
         //处理卖方
-        settlementSellAccount(trade, tradeSymbol, feeRule, settlementTime);
+        settlementSellAccount(trade, tradeSymbol, settlementTime);
         return true;
     }
 
 
-    private void settlementBuyAccount(Trade trade, TradeSymbol tradeSymbol, FeeRule feeRule, LocalDateTime settlementTime) {
-        BigDecimal maxFrozenBigDecimal = BigDecimal.valueOf(calculateMaxFrozen(trade.getPrice(), trade.getQuantity(), feeRule, OrderSide.BUY));
-        RoleType buyRole = trade.getBuyOrderId() < trade.getSellOrderId() ? RoleType.MAKER : RoleType.TAKER;
-        double buyFee = calculateFee(trade.getPrice(), trade.getQuantity(), feeRule, buyRole);
+    private void settlementBuyAccount(Trade trade, TradeSymbol tradeSymbol, LocalDateTime settlementTime) {
+        BigDecimal maxFrozenBigDecimal = BigDecimal.valueOf(calculateMaxFrozen(trade.getPrice(), trade.getQuantity()));
         //更新买方 （计价资产）U 账户资金
-        int buyUpdateQuoteAssetAccountNum = getBaseMapper().settlementBuyQuoteAssetAccount(maxFrozenBigDecimal.doubleValue(), trade.getAmount(), buyFee, settlementTime, trade.getBuyUserId(), tradeSymbol.getQuoteAsset());
+        int buyUpdateQuoteAssetAccountNum = getBaseMapper().settlementBuyQuoteAssetAccount(maxFrozenBigDecimal.doubleValue(), trade.getAmount(), settlementTime, trade.getBuyUserId(), tradeSymbol.getQuoteAsset());
         BizAssert.isTrue(buyUpdateQuoteAssetAccountNum > 0, "买方更新计价资产账户失败");
         //查询买方 （计价资产）U 账户资金最新的变动后余额
         Account buyQuoteAssetAccount = lambdaQuery().eq(Account::getUserId, trade.getBuyUserId()).eq(Account::getAsset, tradeSymbol.getQuoteAsset()).last("LIMIT 1").one();
-        double buyQuoteChangeAmount = BigDecimal.valueOf(buyFee).add(BigDecimal.valueOf(trade.getAmount())).doubleValue();
         //保存买方 （计价资产）U 账户资金 变动流水记录
-        accountLedgerService.saveTradeBizTypeLedger(buyQuoteAssetAccount, trade.getId(), -buyQuoteChangeAmount);
+        accountLedgerService.saveTradeBizTypeLedger(buyQuoteAssetAccount, trade.getId(), - trade.getAmount());
         //更新买方 基础资产（BTC）账户资金
         int buyUpdateBaseAssetAccountNum = getBaseMapper().settlementBuyBaseAssetAccount((double)trade.getQuantity(), settlementTime, trade.getBuyUserId(), tradeSymbol.getBaseAsset());
         BizAssert.isTrue(buyUpdateBaseAssetAccountNum > 0, "买方更新基础资产账户失败");
         Account buyBaseAssetAccount = lambdaQuery().eq(Account::getUserId, trade.getBuyUserId()).eq(Account::getAsset, tradeSymbol.getBaseAsset()).last("LIMIT 1").one();
         //保存买方 基础资产（BTC）账户资金 变动流水记录
         accountLedgerService.saveTradeBizTypeLedger(buyBaseAssetAccount, trade.getId(), (double)trade.getQuantity());
-        //记录买方手续费
-        boolean buyFeeRet = feeRecordService.save(trade, tradeSymbol.getQuoteAsset(), buyFee, OrderSide.BUY);
-        BizAssert.isTrue(buyFeeRet, "买方记录手续费失败");
     }
 
-    private void settlementSellAccount(Trade trade, TradeSymbol tradeSymbol, FeeRule feeRule, LocalDateTime settlementTime) {
-        RoleType sellRole = trade.getBuyOrderId() > trade.getSellOrderId() ? RoleType.MAKER : RoleType.TAKER;
+    private void settlementSellAccount(Trade trade, TradeSymbol tradeSymbol, LocalDateTime settlementTime) {
         //更新 卖方 基础资产（BTC）账户资金
         int sellUpdateBaseAssetAccountNum = getBaseMapper().settlementSellBaseAssetAccount((double)trade.getQuantity(), settlementTime, trade.getBuyUserId(), tradeSymbol.getBaseAsset());
         BizAssert.isTrue(sellUpdateBaseAssetAccountNum > 0, "卖方更新基础资产账户失败");
@@ -156,18 +127,14 @@ public class AccountService extends BaseService<AccountMapper, Account> {
         //保存卖方 基础资产（BTC）账户资金 变动流水记录
         accountLedgerService.saveTradeBizTypeLedger(sellBaseAssetAccount, trade.getId(), -(double)trade.getQuantity());
 
-        double sellFee = calculateFee(trade.getPrice(), trade.getQuantity(), feeRule, sellRole);
         //更新 卖方 （计价资产）U 账户资金
-        int sellUpdateQuoteAssetAccountNum = getBaseMapper().settlementSellQuoteAssetAccount(trade.getAmount(), sellFee, settlementTime, trade.getBuyUserId(), tradeSymbol.getQuoteAsset());
+        int sellUpdateQuoteAssetAccountNum = getBaseMapper().settlementSellQuoteAssetAccount(trade.getAmount(), settlementTime, trade.getBuyUserId(), tradeSymbol.getQuoteAsset());
         BizAssert.isTrue(sellUpdateQuoteAssetAccountNum > 0, "卖方更新计价资产账户失败");
         //查询 卖方 （计价资产）U账户资金 最新的变动后余额
         Account sellQuoteAssetAccount = lambdaQuery().eq(Account::getUserId, trade.getSellUserId()).eq(Account::getAsset, tradeSymbol.getQuoteAsset()).last("LIMIT 1").one();
         //保存卖方 （计价资产）U账户资金 变动流水记录
-        Double sellQuoteChangeAmount = BigDecimal.valueOf(trade.getAmount()).subtract(BigDecimal.valueOf(sellFee)).doubleValue();
+        Double sellQuoteChangeAmount = trade.getAmount();
         accountLedgerService.saveTradeBizTypeLedger(sellQuoteAssetAccount, trade.getId(), sellQuoteChangeAmount);
-        //记录买手续费
-        boolean sellFeeRet = feeRecordService.save(trade, tradeSymbol.getQuoteAsset(), sellFee, OrderSide.SELL);
-        BizAssert.isTrue(sellFeeRet, "卖方记录手续费失败");
     }
 
     public boolean unfrozenAsset(Long userId, String asset, double amount) {
