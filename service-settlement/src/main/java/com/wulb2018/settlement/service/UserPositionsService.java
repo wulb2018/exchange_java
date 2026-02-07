@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -26,6 +27,27 @@ public class UserPositionsService extends BaseService<UserPositionsMapper, UserP
 
     private final UserPositionsConvert userPositionsConvert;
 
+    public boolean initUserPositions(Long userId, Long stockId) {
+        UserPositions userPositions = lambdaQuery().eq(UserPositions::getUserId, userId).last("LIMIT 1").one();
+        if (userPositions != null) {
+            return true;
+        }
+        userPositions = new UserPositions();
+        userPositions.setUserId(userId);
+        userPositions.setStockId(stockId);
+        userPositions.setFirstBuyDate(LocalDateTime.now());
+        return save(userPositions);
+    }
+
+    public boolean settlementBuyUserPositions(Long userId, Long stockId, Integer quantity) {
+        int updateNum = getBaseMapper().settlementBuyUserPositions(quantity, LocalDateTime.now(), userId, stockId);
+        return updateNum > 0;
+    }
+
+    public boolean settlementSellUserPositions(Long userId, Long stockId, Integer quantity) {
+        int updateNum = getBaseMapper().settlementSellAccount(quantity, LocalDateTime.now(), userId, stockId);
+        return updateNum > 0;
+    }
 
     public UserPositionsVO getOne(Serializable id) {
         return userPositionsConvert.toVo(super.getById(id));

@@ -3,10 +3,10 @@ package com.wulb2018.settlement.controller;
 
 import com.wulb2018.common.controller.BaseRestController;
 import com.wulb2018.common.model.ApiResponse;
-import com.wulb2018.settlement.model.dto.StockAddDTO;
-import com.wulb2018.settlement.model.dto.StockUpdateDTO;
-import com.wulb2018.settlement.model.vo.StockVO;
-import com.wulb2018.settlement.service.StockService;
+import com.wulb2018.biz.model.dto.StockAddDTO;
+import com.wulb2018.biz.model.dto.StockUpdateDTO;
+import com.wulb2018.biz.model.vo.StockVO;
+import com.wulb2018.biz.service.StockService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;

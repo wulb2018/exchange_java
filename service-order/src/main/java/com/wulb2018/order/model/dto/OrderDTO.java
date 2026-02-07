@@ -23,8 +23,8 @@ public class OrderDTO {
     @ApiModelProperty("用户ID")
     private Long userId;
 
-    @ApiModelProperty("交易对ID")
-    private Long symbolId;
+    @ApiModelProperty("股票ID")
+    private Long stockId;
 
     @ApiModelProperty("方向：1=买，2=卖")
     private OrderSide side;

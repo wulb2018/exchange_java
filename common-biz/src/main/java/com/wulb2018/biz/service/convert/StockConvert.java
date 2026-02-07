@@ -1,12 +1,12 @@
-package com.wulb2018.settlement.service.convert;
+package com.wulb2018.biz.service.convert;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.wulb2018.settlement.model.dto.StockAddDTO;
-import com.wulb2018.settlement.model.dto.StockDTO;
-import com.wulb2018.settlement.model.dto.StockUpdateDTO;
-import com.wulb2018.settlement.model.entity.Stock;
-import com.wulb2018.settlement.model.vo.StockVO;
+import com.wulb2018.biz.model.dto.StockAddDTO;
+import com.wulb2018.biz.model.dto.StockDTO;
+import com.wulb2018.biz.model.dto.StockUpdateDTO;
+import com.wulb2018.biz.model.entity.Stock;
+import com.wulb2018.biz.model.vo.StockVO;
 import org.mapstruct.Mapper;
 
 import java.util.List;

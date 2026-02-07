@@ -1,7 +1,5 @@
 package com.wulb2018.settlement.model.dto;
 
-import java.time.LocalDateTime;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -25,8 +23,8 @@ public class AccountUpdateDTO {
     @ApiModelProperty("用户ID")
     private Long userId;
 
-    @ApiModelProperty("资产币种")
-    private String asset;
+//    @ApiModelProperty("资产币种")
+//    private String asset;
 
     @ApiModelProperty("可用余额")
     private Double available;

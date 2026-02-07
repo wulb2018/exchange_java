@@ -4,6 +4,7 @@ package com.wulb2018.settlement.service;
 import com.wulb2018.biz.enums.CandlestickType;
 import com.wulb2018.biz.model.dto.OrderUpdateDTO;
 import com.wulb2018.biz.model.vo.CandlestickVO;
+import com.wulb2018.biz.model.vo.TradeVO;
 import com.wulb2018.biz.process.candlestick.ICandlestickTypeProcess;
 import com.wulb2018.client.order.OrderFeignClient;
 import com.wulb2018.common.service.BaseService;
@@ -12,7 +13,6 @@ import com.wulb2018.settlement.model.dto.TradeAddDTO;
 import com.wulb2018.settlement.model.dto.TradeDTO;
 import com.wulb2018.settlement.model.dto.TradeUpdateDTO;
 import com.wulb2018.settlement.model.entity.Trade;
-import com.wulb2018.settlement.model.vo.TradeVO;
 import com.wulb2018.settlement.service.convert.TradeConvert;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +41,8 @@ public class TradeService extends BaseService<TradeMapper, Trade> {
     private CandlestickService candlestickService;
     @Resource
     private AccountService accountService;
+    @Resource
+    private UserPositionsService userPositionsService;
 //    private final static List<CandlestickVO> LAST_SOME_CANDLESTICK_LIST = new ArrayList<>();
 //    private final static int LAST_SOME_CANDLESTICK_LIST_SIZE = 3;
 
@@ -57,6 +59,10 @@ public class TradeService extends BaseService<TradeMapper, Trade> {
         save(trade);
         //缓存维护 最后几个蜡烛图
         candlestickService.safeguardCandlestickCompleteness(trade);
+
+        userPositionsService.initUserPositions(tradeDTO.getBuyUserId(), tradeDTO.getStockId());
+        userPositionsService.initUserPositions(tradeDTO.getSellUserId(), tradeDTO.getStockId());
+
         accountService.settlementAccount(trade);
         //todo 这里以后做最终一致性
         List<OrderUpdateDTO> orderUpdateDTOList = new ArrayList<>();

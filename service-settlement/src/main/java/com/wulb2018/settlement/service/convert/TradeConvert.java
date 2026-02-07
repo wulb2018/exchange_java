@@ -7,7 +7,7 @@ import com.wulb2018.settlement.model.dto.TradeAddDTO;
 import com.wulb2018.settlement.model.dto.TradeDTO;
 import com.wulb2018.settlement.model.dto.TradeUpdateDTO;
 import com.wulb2018.settlement.model.entity.Trade;
-import com.wulb2018.settlement.model.vo.TradeVO;
+import com.wulb2018.biz.model.vo.TradeVO;
 import org.mapstruct.Mapper;
 
 import java.util.List;

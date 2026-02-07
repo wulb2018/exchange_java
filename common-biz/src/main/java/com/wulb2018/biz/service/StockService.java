@@ -1,13 +1,13 @@
-package com.wulb2018.settlement.service;
+package com.wulb2018.biz.service;
 
 
+import com.wulb2018.biz.mapper.StockMapper;
+import com.wulb2018.biz.model.dto.StockAddDTO;
+import com.wulb2018.biz.model.dto.StockUpdateDTO;
+import com.wulb2018.biz.model.entity.Stock;
+import com.wulb2018.biz.model.vo.StockVO;
+import com.wulb2018.biz.service.convert.StockConvert;
 import com.wulb2018.common.service.BaseService;
-import com.wulb2018.settlement.mapper.StockMapper;
-import com.wulb2018.settlement.model.dto.StockAddDTO;
-import com.wulb2018.settlement.model.dto.StockUpdateDTO;
-import com.wulb2018.settlement.model.entity.Stock;
-import com.wulb2018.settlement.model.vo.StockVO;
-import com.wulb2018.settlement.service.convert.StockConvert;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

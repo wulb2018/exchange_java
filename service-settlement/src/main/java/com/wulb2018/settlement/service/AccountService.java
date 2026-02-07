@@ -1,16 +1,14 @@
 package com.wulb2018.settlement.service;
 
-import com.wulb2018.biz.enums.OrderSide;
 import com.wulb2018.biz.model.dto.AccountCommonDTO;
-import com.wulb2018.biz.model.entity.TradeSymbol;
-import com.wulb2018.biz.service.TradeSymbolService;
+import com.wulb2018.biz.model.entity.Stock;
+import com.wulb2018.biz.service.StockService;
 import com.wulb2018.common.service.BaseService;
 import com.wulb2018.common.util.BizAssert;
 import com.wulb2018.settlement.mapper.AccountMapper;
 import com.wulb2018.settlement.model.dto.AccountAddDTO;
 import com.wulb2018.settlement.model.dto.AccountUpdateDTO;
 import com.wulb2018.settlement.model.entity.Account;
-import com.wulb2018.settlement.model.entity.FeeRule;
 import com.wulb2018.settlement.model.entity.Trade;
 import com.wulb2018.settlement.model.vo.AccountVO;
 import com.wulb2018.settlement.service.convert.AccountConvert;
@@ -33,10 +31,9 @@ import java.time.LocalDateTime;
 public class AccountService extends BaseService<AccountMapper, Account> {
 
     private final AccountConvert accountConvert;
-    private final FeeRuleService feeRuleService;
-    private final TradeSymbolService tradeSymbolService;
-    private final AccountFrozenLogService accountFrozenLogService;
     private final AccountLedgerService accountLedgerService;
+    private final StockService stockService;
+    private final UserPositionsService userPositionsService;
 
     /**
      * 冻结资产
@@ -46,30 +43,14 @@ public class AccountService extends BaseService<AccountMapper, Account> {
      * @return
      */
     public boolean frozenAsset(AccountCommonDTO accountCommonDTO) {
-        TradeSymbol tradeSymbol = tradeSymbolService.getById(accountCommonDTO.getSymbolId());
-        if (tradeSymbol == null) {
+        Stock stock = stockService.getById(accountCommonDTO.getStockId());
+        if (stock == null) {
             return false;
         }
         //todo 要做最终一致性
-        String asset;
-        if (OrderSide.BUY.equals(accountCommonDTO.getSide())) {
-            //买方冻结计价资产
-            asset = tradeSymbol.getQuoteAsset();
-        } else {
-            //卖方冻结基础资产
-            asset = tradeSymbol.getBaseAsset();
-        }
-
-        FeeRule feeRule = feeRuleService.getOneBySymbolId(accountCommonDTO.getSymbolId());
-        if (feeRule == null) {
-            return false;
-        }
-
         Double frozen = calculateMaxFrozen(accountCommonDTO.getPrice(), accountCommonDTO.getQuantity());
-
         int updateNum = getBaseMapper()
-                .frozenAsset(frozen, LocalDateTime.now(), accountCommonDTO.getUserId(), asset);
-
+                .frozenAsset(frozen, LocalDateTime.now(), accountCommonDTO.getUserId());
         return updateNum > 0;
     }
 
@@ -87,54 +68,41 @@ public class AccountService extends BaseService<AccountMapper, Account> {
      * @return
      */
     @Transactional
-    public boolean settlementAccount(Trade trade) {
-        TradeSymbol tradeSymbol = tradeSymbolService.getById(trade.getSymbolId());
-        if (tradeSymbol == null) {
-            return false;
-        }
+    public void settlementAccount(Trade trade) {
         LocalDateTime settlementTime = LocalDateTime.now();
         //处理买方
-        settlementBuyAccount(trade, tradeSymbol, settlementTime);
+        settlementBuyAccount(trade, settlementTime);
         //处理卖方
-        settlementSellAccount(trade, tradeSymbol, settlementTime);
-        return true;
+        settlementSellAccount(trade, settlementTime);
     }
 
 
-    private void settlementBuyAccount(Trade trade, TradeSymbol tradeSymbol, LocalDateTime settlementTime) {
+    private void settlementBuyAccount(Trade trade, LocalDateTime settlementTime) {
         BigDecimal maxFrozenBigDecimal = BigDecimal.valueOf(calculateMaxFrozen(trade.getPrice(), trade.getQuantity()));
-        //更新买方 （计价资产）U 账户资金
-        int buyUpdateQuoteAssetAccountNum = getBaseMapper().settlementBuyQuoteAssetAccount(maxFrozenBigDecimal.doubleValue(), trade.getAmount(), settlementTime, trade.getBuyUserId(), tradeSymbol.getQuoteAsset());
-        BizAssert.isTrue(buyUpdateQuoteAssetAccountNum > 0, "买方更新计价资产账户失败");
-        //查询买方 （计价资产）U 账户资金最新的变动后余额
-        Account buyQuoteAssetAccount = lambdaQuery().eq(Account::getUserId, trade.getBuyUserId()).eq(Account::getAsset, tradeSymbol.getQuoteAsset()).last("LIMIT 1").one();
-        //保存买方 （计价资产）U 账户资金 变动流水记录
-        accountLedgerService.saveTradeBizTypeLedger(buyQuoteAssetAccount, trade.getId(), - trade.getAmount());
-        //更新买方 基础资产（BTC）账户资金
-        int buyUpdateBaseAssetAccountNum = getBaseMapper().settlementBuyBaseAssetAccount((double)trade.getQuantity(), settlementTime, trade.getBuyUserId(), tradeSymbol.getBaseAsset());
-        BizAssert.isTrue(buyUpdateBaseAssetAccountNum > 0, "买方更新基础资产账户失败");
-        Account buyBaseAssetAccount = lambdaQuery().eq(Account::getUserId, trade.getBuyUserId()).eq(Account::getAsset, tradeSymbol.getBaseAsset()).last("LIMIT 1").one();
-        //保存买方 基础资产（BTC）账户资金 变动流水记录
-        accountLedgerService.saveTradeBizTypeLedger(buyBaseAssetAccount, trade.getId(), (double)trade.getQuantity());
+        //更新买方  账户资金
+        int buyUpdateQuoteAssetAccountNum = getBaseMapper().settlementBuyAccount(maxFrozenBigDecimal.doubleValue(), trade.getAmount(), settlementTime, trade.getBuyUserId());
+        BizAssert.isTrue(buyUpdateQuoteAssetAccountNum > 0, "买方更新账户失败");
+        //查询买方 资金最新的变动后余额
+        Account buyAccount = lambdaQuery().eq(Account::getUserId, trade.getBuyUserId()).last("LIMIT 1").one();
+        //保存买方 账户资金 变动流水记录
+        boolean saveTradeBizTypeLedgerRet = accountLedgerService.saveTradeBizTypeLedger(buyAccount, trade.getId(), - trade.getAmount());
+        BizAssert.isTrue(saveTradeBizTypeLedgerRet, "保存买方账户资金变动流水记录失败");
+        //更新买方 持仓
+        boolean settlementBuyUserPositionsRet = userPositionsService.settlementBuyUserPositions(trade.getBuyUserId(), trade.getStockId(), trade.getQuantity());
+        BizAssert.isTrue(settlementBuyUserPositionsRet, "买方更新持仓失败");
     }
 
-    private void settlementSellAccount(Trade trade, TradeSymbol tradeSymbol, LocalDateTime settlementTime) {
-        //更新 卖方 基础资产（BTC）账户资金
-        int sellUpdateBaseAssetAccountNum = getBaseMapper().settlementSellBaseAssetAccount((double)trade.getQuantity(), settlementTime, trade.getBuyUserId(), tradeSymbol.getBaseAsset());
-        BizAssert.isTrue(sellUpdateBaseAssetAccountNum > 0, "卖方更新基础资产账户失败");
-        //查询 卖方 基础资产（BTC）账户资金 最新的变动后余额
-        Account sellBaseAssetAccount = lambdaQuery().eq(Account::getUserId, trade.getSellUserId()).eq(Account::getAsset, tradeSymbol.getBaseAsset()).last("LIMIT 1").one();
-        //保存卖方 基础资产（BTC）账户资金 变动流水记录
-        accountLedgerService.saveTradeBizTypeLedger(sellBaseAssetAccount, trade.getId(), -(double)trade.getQuantity());
-
-        //更新 卖方 （计价资产）U 账户资金
-        int sellUpdateQuoteAssetAccountNum = getBaseMapper().settlementSellQuoteAssetAccount(trade.getAmount(), settlementTime, trade.getBuyUserId(), tradeSymbol.getQuoteAsset());
+    private void settlementSellAccount(Trade trade, LocalDateTime settlementTime) {
+        //卖方更新持仓数量
+        boolean settlementSellUserPositionsRet = userPositionsService.settlementSellUserPositions(trade.getSellUserId(), trade.getStockId(), trade.getQuantity());
+        BizAssert.isTrue(settlementSellUserPositionsRet, "卖方更新持仓数量失败");
+        //更新 卖方 账户资金
+        int sellUpdateQuoteAssetAccountNum = getBaseMapper().settlementSellAccount(trade.getAmount(), settlementTime, trade.getBuyUserId());
         BizAssert.isTrue(sellUpdateQuoteAssetAccountNum > 0, "卖方更新计价资产账户失败");
-        //查询 卖方 （计价资产）U账户资金 最新的变动后余额
-        Account sellQuoteAssetAccount = lambdaQuery().eq(Account::getUserId, trade.getSellUserId()).eq(Account::getAsset, tradeSymbol.getQuoteAsset()).last("LIMIT 1").one();
-        //保存卖方 （计价资产）U账户资金 变动流水记录
-        Double sellQuoteChangeAmount = trade.getAmount();
-        accountLedgerService.saveTradeBizTypeLedger(sellQuoteAssetAccount, trade.getId(), sellQuoteChangeAmount);
+        //查询 卖方 资金 最新的变动后余额
+        Account sellQuoteAssetAccount = lambdaQuery().eq(Account::getUserId, trade.getSellUserId()).last("LIMIT 1").one();
+        //保存卖方 资金 变动流水记录
+        accountLedgerService.saveTradeBizTypeLedger(sellQuoteAssetAccount, trade.getId(), trade.getAmount());
     }
 
     public boolean unfrozenAsset(Long userId, String asset, double amount) {

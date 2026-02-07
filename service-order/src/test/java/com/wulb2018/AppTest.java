@@ -44,13 +44,13 @@ public class AppTest
     public void testOrder(){
         OrderAddDTO orderAddDTO = new OrderAddDTO();
         orderAddDTO.setUserId(1L);
-        orderAddDTO.setSymbolId(1L);
+        orderAddDTO.setStockId(1L);
         orderAddDTO.setSide(OrderSide.SELL);
         orderAddDTO.setType(1);
-        orderAddDTO.setPrice(1000.01);
+        orderAddDTO.setPrice(1000.0);
         orderAddDTO.setQuantity(2);
         orderAddDTO.setStatus(OrderStatus.NEW);
-        orderAddDTO.setFrozenAmount(1001.02);
+        orderAddDTO.setFrozenAmount(100.0);
         orderAddDTO.setFilledQuantity(0);
         orderService.save(orderAddDTO);
     }
@@ -86,7 +86,7 @@ public class AppTest
         for (double price: priceGenerator) {
             OrderAddDTO orderAddDTO = new OrderAddDTO();
             orderAddDTO.setUserId(getUserId());
-            orderAddDTO.setSymbolId(1L);
+            orderAddDTO.setStockId(1L);
             orderAddDTO.setSide(getOrderSide());
             orderAddDTO.setType(1);
             orderAddDTO.setPrice(price);
@@ -108,7 +108,7 @@ public class AppTest
     public void testOne() {
         OrderAddDTO buyOrderAddDTO = new OrderAddDTO();
         buyOrderAddDTO.setUserId(1L);
-        buyOrderAddDTO.setSymbolId(1L);
+        buyOrderAddDTO.setStockId(1L);
         buyOrderAddDTO.setSide(OrderSide.BUY);
         buyOrderAddDTO.setType(1);
         buyOrderAddDTO.setPrice(100.);
@@ -120,7 +120,7 @@ public class AppTest
 
         OrderAddDTO sellOrderAddDTO = new OrderAddDTO();
         sellOrderAddDTO.setUserId(2L);
-        sellOrderAddDTO.setSymbolId(1L);
+        sellOrderAddDTO.setStockId(1L);
         sellOrderAddDTO.setSide(OrderSide.SELL);
         sellOrderAddDTO.setType(1);
         sellOrderAddDTO.setPrice(80.);

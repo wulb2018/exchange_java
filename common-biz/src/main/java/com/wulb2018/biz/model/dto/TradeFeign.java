@@ -15,8 +15,8 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @ApiModel("TradeFeign")
 public class TradeFeign {
-    @ApiModelProperty("交易对ID")
-    private Long symbolId;
+    @ApiModelProperty("股票ID")
+    private Long stockId;
     @ApiModelProperty("买方订单ID")
     private Long buyOrderId;
     @ApiModelProperty("卖方订单ID")

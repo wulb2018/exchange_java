@@ -27,9 +27,9 @@ public class Order extends BaseEntity<Order> {
     private Long userId;
 
     /**
-     * 交易对ID
+     * 股票ID
      */
-    private Long symbolId;
+    private Long stockId;
 
     /**
      * 方向：1=买，2=卖

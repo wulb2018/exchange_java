@@ -20,9 +20,9 @@ import lombok.experimental.Accessors;
 public class Trade extends BaseEntity<Trade> {
 
     /**
-     * 交易对
+     * 股票ID
      */
-    private Long symbolId;
+    private Long stockId;
 
     /**
      * 买单ID

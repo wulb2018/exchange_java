@@ -1,7 +1,7 @@
-package com.wulb2018.settlement.mapper;
+package com.wulb2018.biz.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.wulb2018.settlement.model.entity.Stock;
+import com.wulb2018.biz.model.entity.Stock;
 
 /**
  * (t_stock)-数据库访问层

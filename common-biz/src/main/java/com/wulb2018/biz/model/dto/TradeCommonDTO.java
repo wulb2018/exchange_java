@@ -11,9 +11,9 @@ import lombok.Data;
 @Data
 public class TradeCommonDTO {
     /**
-     * 交易对
+     * 股票id
      */
-    private Long symbolId;
+    private Long stockId;
 
     /**
      * 买单ID
@@ -57,7 +57,7 @@ public class TradeCommonDTO {
     @Override
     public String toString(){
         //用于测试
-        return "交易对ID = " + symbolId + ", 买方订单ID = " + buyOrderId + ", 卖方订单ID = " + sellOrderId
+        return "交易对ID = " + stockId + ", 买方订单ID = " + buyOrderId + ", 卖方订单ID = " + sellOrderId
                 + ", 成交价格 = " + price + ",成交数量 = " + quantity + "， 成交额 = " + amount + "\n";
     }
 }

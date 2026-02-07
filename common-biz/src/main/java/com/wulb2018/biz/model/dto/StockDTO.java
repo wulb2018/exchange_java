@@ -1,4 +1,4 @@
-package com.wulb2018.settlement.model.dto;
+package com.wulb2018.biz.model.dto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -9,15 +9,15 @@ import java.math.BigDecimal;
 
 
 /**
- * (t_stock)-添加实体参数类
+ * (t_stock)-实体类
  *
  * @author makejava
  * @since 2026-02-07 14:53:28
  */
 @Data
 @Accessors(chain = true)
-@ApiModel("StockAddDTO")
-public class StockAddDTO {
+@ApiModel("StockDTO")
+public class StockDTO {
 
 
     @ApiModelProperty("股票名字")
@@ -28,6 +28,7 @@ public class StockAddDTO {
 
     @ApiModelProperty("发行价格")
     private BigDecimal issuePrice;
+
 
 }
 

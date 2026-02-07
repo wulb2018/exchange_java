@@ -1,7 +1,5 @@
 package com.wulb2018.settlement.model.vo;
 
-import java.time.LocalDateTime;
-
 import com.wulb2018.common.model.BaseVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -24,8 +22,8 @@ public class AccountVO extends BaseVO<AccountVO> {
     @ApiModelProperty("用户ID")
     private Long userId;
 
-    @ApiModelProperty("资产币种")
-    private String asset;
+//    @ApiModelProperty("资产币种")
+//    private String asset;
 
     @ApiModelProperty("可用余额")
     private Double available;

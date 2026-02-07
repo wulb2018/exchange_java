@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wulb2018.settlement.mapper.UserPositionsMapper">
+
+
+    <!--    结算买方持仓数量-->
+    <update id="settlementBuyAccount" >
+        UPDATE `t_user_positions` SET total_quantity = total_quantity + #{quantity}, available_quantity = available_quantity + #{quantity}, modify_date=#{modifyDate} WHERE user_id=#{userId} AND stock_id = #{stockId};
+    </update>
+
+    <!--    结算卖方持仓数量-->
+    <update id="settlementSellAccount" >
+        UPDATE `t_user_positions` SET total_quantity = total_quantity - #{quantity}, frozen_quantity = frozen_quantity - #{quantity}, modify_date=#{modifyDate} WHERE user_id=#{userId} AND stock_id = #{stockId};
+    </update>
+</mapper>

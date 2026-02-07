@@ -2,20 +2,20 @@ package com.wulb2018.settlement.controller;
 
 
 import cn.hutool.core.bean.BeanUtil;
+import com.wulb2018.biz.constant.PrecisionConst;
+import com.wulb2018.biz.convert.TradeFeignConvert;
 import com.wulb2018.biz.enums.CandlestickType;
 import com.wulb2018.biz.model.dto.TradeCommonDTO;
-import com.wulb2018.biz.model.entity.TradeSymbol;
-import com.wulb2018.biz.model.vo.CandlestickVO;
-import com.wulb2018.biz.service.TradeSymbolService;
-import com.wulb2018.biz.util.DataPrecisionConvert;
-import com.wulb2018.biz.convert.TradeFeignConvert;
 import com.wulb2018.biz.model.dto.TradeFeign;
+import com.wulb2018.biz.model.vo.CandlestickVO;
+import com.wulb2018.biz.model.vo.TradeVO;
+import com.wulb2018.biz.service.StockService;
+import com.wulb2018.biz.util.DataPrecisionConvert;
 import com.wulb2018.common.controller.BaseRestController;
 import com.wulb2018.common.model.ApiResponse;
 import com.wulb2018.settlement.model.dto.TradeAddDTO;
 import com.wulb2018.settlement.model.dto.TradeDTO;
 import com.wulb2018.settlement.model.dto.TradeUpdateDTO;
-import com.wulb2018.settlement.model.vo.TradeVO;
 import com.wulb2018.settlement.service.TradeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -42,23 +42,22 @@ public class TradeController extends BaseRestController {
 
     private final TradeService tradeService;
     private final TradeFeignConvert tradeFeignConvert;
-    private final TradeSymbolService tradeSymbolService;
+    private final StockService stockService;
 
     @ApiOperation("结算交易")
     @PostMapping("/settlement_trade")
     public ApiResponse<String> settlementTrade(@Valid @RequestBody TradeFeign tradeFeign) {
         TradeCommonDTO tradeCommonDTO = tradeFeignConvert.toOrderCommonDTO(tradeFeign);
-        TradeSymbol tradeSymbol = tradeSymbolService.getById(tradeCommonDTO.getSymbolId());
-        TradeDTO  tradeDTO = tradeCommonDTO2TradeDTO(tradeCommonDTO, tradeSymbol);
+        TradeDTO  tradeDTO = tradeCommonDTO2TradeDTO(tradeCommonDTO);
         tradeService.settlementTrade(tradeDTO);
         return ApiResponse.success();
     }
 
-    private TradeDTO tradeCommonDTO2TradeDTO(TradeCommonDTO tradeCommonDTO, TradeSymbol tradeSymbol) {
+    private TradeDTO tradeCommonDTO2TradeDTO(TradeCommonDTO tradeCommonDTO) {
         TradeDTO tradeDTO = new TradeDTO();
         BeanUtil.copyProperties(tradeCommonDTO, tradeDTO);
-        tradeDTO.setPrice(DataPrecisionConvert.intToDecimal(tradeCommonDTO.getPrice(), tradeSymbol.getPricePrecision()));
-        tradeDTO.setAmount(DataPrecisionConvert.intToDecimal(tradeCommonDTO.getAmount(), tradeSymbol.getPricePrecision()));
+        tradeDTO.setPrice(DataPrecisionConvert.intToDecimal(tradeCommonDTO.getPrice(), PrecisionConst.pricePrecision));
+        tradeDTO.setAmount(DataPrecisionConvert.intToDecimal(tradeCommonDTO.getAmount(), PrecisionConst.pricePrecision));
         return tradeDTO;
     }
 

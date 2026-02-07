@@ -1,14 +1,17 @@
 package com.wulb2018.order.service;
 
 
+import com.wulb2018.biz.constant.PrecisionConst;
 import com.wulb2018.biz.enums.CandlestickType;
 import com.wulb2018.biz.enums.OrderSide;
 import com.wulb2018.biz.enums.OrderStatus;
 import com.wulb2018.biz.model.dto.AccountCommonDTO;
 import com.wulb2018.biz.model.dto.OrderCommonDTO;
 import com.wulb2018.biz.model.dto.OrderUpdateDTO;
+import com.wulb2018.biz.model.entity.Stock;
 import com.wulb2018.biz.model.entity.TradeSymbol;
 import com.wulb2018.biz.model.vo.CandlestickVO;
+import com.wulb2018.biz.service.StockService;
 import com.wulb2018.biz.service.TradeSymbolService;
 import com.wulb2018.biz.util.DataPrecisionConvert;
 import com.wulb2018.client.matching.MatchingFeignClient;
@@ -51,6 +54,7 @@ public class OrderService extends BaseService<OrderMapper, Order> {
     private final AccountFeignClient accountFeignClient;
     private final TradeSymbolService tradeSymbolService;
     private final TradeFeignClient tradeFeignClient;
+    private final StockService stockService;
 
 
     public OrderVO getOne(Serializable id) {
@@ -63,11 +67,11 @@ public class OrderService extends BaseService<OrderMapper, Order> {
         accountCommonDTO.setUserId(orderAddDTO.getUserId());
         accountCommonDTO.setPrice(orderAddDTO.getPrice());
         accountCommonDTO.setQuantity(orderAddDTO.getQuantity());
-        accountCommonDTO.setSymbolId(orderAddDTO.getSymbolId());
+        accountCommonDTO.setStockId(orderAddDTO.getStockId());
         accountCommonDTO.setSide(orderAddDTO.getSide());
 
-        TradeSymbol symbol = tradeSymbolService.getById(accountCommonDTO.getSymbolId());
-        if (symbol == null) {
+        Stock stock = stockService.getById(accountCommonDTO.getStockId());
+        if (stock == null) {
             return false;
         }
         ApiResponse<Boolean> response = accountFeignClient.frozenAsset(accountCommonDTO);
@@ -79,7 +83,7 @@ public class OrderService extends BaseService<OrderMapper, Order> {
         boolean ret = this.save(entity);
         OrderCommonDTO orderCommonDTO = orderFeignConvert.toOrderFeign(entity);
         //做价格精度转换
-        orderCommonDTO.setPrice(DataPrecisionConvert.decimalToInt(entity.getPrice(), symbol.getPricePrecision()));
+        orderCommonDTO.setPrice(DataPrecisionConvert.decimalToInt(entity.getPrice(), PrecisionConst.pricePrecision));
         matchingFeignClient.addOrder(orderCommonDTO);
         return ret;
         //todo 有空统一改一下索引名称
@@ -93,12 +97,12 @@ public class OrderService extends BaseService<OrderMapper, Order> {
         List<Order> buyOrderList = buyOrderList();
         List<Long> symbolIds = new ArrayList<>();
         if (!buyOrderList.isEmpty()) {
-            symbolIds.addAll(buyOrderList.stream().map(Order::getSymbolId).distinct().toList());
+            symbolIds.addAll(buyOrderList.stream().map(Order::getStockId).distinct().toList());
         }
 
         List<Order> sellOrderList = sellOrderList();
         if (!sellOrderList.isEmpty()) {
-            symbolIds.addAll(sellOrderList.stream().map(Order::getSymbolId).distinct().toList());
+            symbolIds.addAll(sellOrderList.stream().map(Order::getStockId).distinct().toList());
         }
         List<OrderCommonDTO> orderCommonDTOList = new ArrayList<>();
         if (symbolIds.isEmpty()) {
@@ -107,13 +111,13 @@ public class OrderService extends BaseService<OrderMapper, Order> {
         Map<Long, TradeSymbol> symbolIdAndTradeSymbolMap = tradeSymbolService.getSymbolIdAndTradeSymbolMap(symbolIds);
         if (!buyOrderList.isEmpty()) {
             for (Order order: buyOrderList) {
-                TradeSymbol tradeSymbol = symbolIdAndTradeSymbolMap.get(order.getSymbolId());
+                TradeSymbol tradeSymbol = symbolIdAndTradeSymbolMap.get(order.getStockId());
                 orderCommonDTOList.add(order2OrderFeign(order, tradeSymbol.getPricePrecision(), tradeSymbol.getQuantityPrecision()));
             }
         }
         if (!sellOrderList.isEmpty()) {
             for (Order order: sellOrderList) {
-                TradeSymbol tradeSymbol = symbolIdAndTradeSymbolMap.get(order.getSymbolId());
+                TradeSymbol tradeSymbol = symbolIdAndTradeSymbolMap.get(order.getStockId());
                 orderCommonDTOList.add(order2OrderFeign(order, tradeSymbol.getPricePrecision(), tradeSymbol.getQuantityPrecision()));
             }
         }
@@ -144,7 +148,7 @@ public class OrderService extends BaseService<OrderMapper, Order> {
         OrderCommonDTO orderCommonDTO = new OrderCommonDTO();
         orderCommonDTO.setId(order.getId());
         orderCommonDTO.setUserId(order.getUserId());
-        orderCommonDTO.setSymbolId(order.getSymbolId());
+        orderCommonDTO.setStockId(order.getStockId());
         orderCommonDTO.setSide(order.getSide());
         orderCommonDTO.setType(order.getType());
         orderCommonDTO.setPrice(DataPrecisionConvert.decimalToInt(order.getPrice(), pricePrecision));

@@ -127,7 +127,7 @@ public class SimpleMatchingService {
                 }
                 return;
             }
-            if (!earliestSellOrder.getSymbolId().equals(earliestBuyOrder.getSymbolId())) {
+            if (!earliestSellOrder.getStockId().equals(earliestBuyOrder.getStockId())) {
                 //交易对不同不进行交易
                 System.out.println("交易对不同不进行交易");
                 return;
@@ -197,7 +197,7 @@ public class SimpleMatchingService {
 
     private TradeCommonDTO createTrade(OrderDTO earliestSellOrderDTO, OrderDTO earliestBuyOrderDTO, Integer lastTradePrice, TradeType tradeType) {
         TradeCommonDTO tradeCommonDTO = new TradeCommonDTO();
-        tradeCommonDTO.setSymbolId(earliestSellOrderDTO.getSymbolId());
+        tradeCommonDTO.setStockId(earliestSellOrderDTO.getStockId());
         tradeCommonDTO.setBuyOrderId(earliestBuyOrderDTO.getId());
         tradeCommonDTO.setSellOrderId(earliestSellOrderDTO.getId());
         tradeCommonDTO.setBuyUserId(earliestBuyOrderDTO.getUserId());

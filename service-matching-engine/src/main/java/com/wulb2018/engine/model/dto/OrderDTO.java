@@ -15,7 +15,7 @@ public class OrderDTO {
 
     private Long userId;
 
-    private Long symbolId;
+    private Long stockId;
 
     private OrderSide side;
 

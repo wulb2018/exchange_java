@@ -1,12 +1,9 @@
 package com.wulb2018.settlement.model.entity;
 
-import java.time.LocalDateTime;
-
 import com.wulb2018.common.model.BaseEntity;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.ToString;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 /**
@@ -26,10 +23,10 @@ public class Account extends BaseEntity<Account> {
      */
     private Long userId;
 
-    /**
-     * 资产币种
-     */
-    private String asset;
+//    /**
+//     * 资产币种
+//     */
+//    private String asset;
 
     /**
      * 可用余额

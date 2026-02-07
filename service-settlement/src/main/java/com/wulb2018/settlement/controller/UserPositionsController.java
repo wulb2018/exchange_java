@@ -1,11 +1,9 @@
 package com.wulb2018.settlement.controller;
 
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.wulb2018.common.controller.BaseRestController;
 import com.wulb2018.common.model.ApiResponse;
 import com.wulb2018.settlement.model.dto.UserPositionsAddDTO;
-import com.wulb2018.settlement.model.dto.UserPositionsDTO;
 import com.wulb2018.settlement.model.dto.UserPositionsUpdateDTO;
 import com.wulb2018.settlement.model.vo.UserPositionsVO;
 import com.wulb2018.settlement.service.UserPositionsService;
@@ -35,11 +33,6 @@ public class UserPositionsController extends BaseRestController {
 
     private final UserPositionsService userPositionsService;
 
-    @ApiOperation("查询分页列表")
-    @GetMapping("page")
-    public ApiResponse<IPage<UserPositionsVO>> page(@Valid UserPositionsDTO userPositionsDTO) {
-        return ApiResponse.success(userPositionsService.page(userPositionsDTO));
-    }
 
     @ApiOperation("查询详情")
     @GetMapping("get/{id}")

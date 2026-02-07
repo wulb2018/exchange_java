@@ -26,11 +26,6 @@ public class UserPositions extends BaseEntity<UserPositions> {
     private Long userId;
 
     /**
-     * 资金表id
-     */
-    private Long accountId;
-
-    /**
      * 股票id
      */
     private Long stockId;

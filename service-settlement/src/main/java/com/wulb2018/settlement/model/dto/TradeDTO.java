@@ -19,8 +19,8 @@ import lombok.experimental.Accessors;
 public class TradeDTO {
 
 
-    @ApiModelProperty("交易对")
-    private Long symbolId;
+    @ApiModelProperty("股票id")
+    private Long stockId;
 
     @ApiModelProperty("买单ID")
     private Long buyOrderId;

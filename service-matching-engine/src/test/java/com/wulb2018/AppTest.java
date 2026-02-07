@@ -33,7 +33,7 @@ public class AppTest
         sellOrderDTO1.setSide(OrderSide.SELL);
         sellOrderDTO1.setPrice(80);
         sellOrderDTO1.setQuantity(1);
-        sellOrderDTO1.setSymbolId(1L);
+        sellOrderDTO1.setStockId(1L);
         simpleMatchingService.addOrder(sellOrderDTO1);
 
         //        Order sellOrder2 = new Order();
@@ -53,7 +53,7 @@ public class AppTest
         buyOrderDTO1.setSide(OrderSide.BUY);
         buyOrderDTO1.setPrice(100);
         buyOrderDTO1.setQuantity(1);
-        buyOrderDTO1.setSymbolId(1L);
+        buyOrderDTO1.setStockId(1L);
         simpleMatchingService.addOrder(buyOrderDTO1);
 
         //simpleMatchingService.testPrintTradeList();

@@ -23,9 +23,6 @@ public class UserPositionsAddDTO {
     @ApiModelProperty("用户id")
     private Long userId;
 
-    @ApiModelProperty("资金表id")
-    private Long accountId;
-
     @ApiModelProperty("股票id")
     private Long stockId;
 

@@ -40,7 +40,7 @@ public class AppTest {
     @Test
     public void testSettlementAccount() {
         Trade trade = new Trade();
-        trade.setSymbolId(1L);
+        trade.setStockId(1L);
         trade.setBuyOrderId(3L);
         trade.setSellOrderId(4L);
         trade.setBuyUserId(1L);

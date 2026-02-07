@@ -20,8 +20,8 @@ public class TradeUpdateDTO {
     @ApiModelProperty("成交ID")
     private Long id;
 
-    @ApiModelProperty("交易对")
-    private Long symbolId;
+    @ApiModelProperty("股票id")
+    private Long stockId;
 
     @ApiModelProperty("买单ID")
     private Long buyOrderId;

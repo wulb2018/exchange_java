@@ -1,4 +1,4 @@
-package com.wulb2018.settlement.model.vo;
+package com.wulb2018.biz.model.vo;
 
 import com.wulb2018.common.model.BaseVO;
 import io.swagger.annotations.ApiModel;
@@ -19,8 +19,8 @@ import lombok.experimental.Accessors;
 @ApiModel("TradeVO")
 public class TradeVO extends BaseVO<TradeVO> {
 
-    @ApiModelProperty("交易对")
-    private Long symbolId;
+    @ApiModelProperty("股票")
+    private Long stockId;
 
     @ApiModelProperty("买单ID")
     private Long buyOrderId;
